@@ -1,0 +1,148 @@
+<%- include('partials/header', { title }) %>
+    <%- include('partials/navbar') %>
+
+        <main class="container">
+            <section class="page-header">
+                <h1>Evolução</h1>
+                <p>Registre a evolução de atributos, valor de mercado e salário.</p>
+            </section>
+
+            <section class="form-card">
+                <h2>Adicionar Registro</h2>
+
+                <form action="/gerenciar/evolucao/adicionar" method="POST" class="form-grid">
+                    <div class="form-group">
+                        <label>Data</label>
+                        <input type="date" name="date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Overall</label>
+                        <input type="number" name="overall" min="1" max="99" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Idade</label>
+                        <input type="number" name="age" min="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ritmo</label>
+                        <input type="number" name="pace" min="1" max="99">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Finalização</label>
+                        <input type="number" name="shooting" min="1" max="99">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Passes</label>
+                        <input type="number" name="passing" min="1" max="99">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Condução</label>
+                        <input type="number" name="dribbling" min="1" max="99">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Defesa</label>
+                        <input type="number" name="defending" min="1" max="99">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Físico</label>
+                        <input type="number" name="physical" min="1" max="99">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Valor de Mercado</label>
+                        <input type="number" name="market_value" min="0" placeholder="10000000">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Salário</label>
+                        <input type="number" name="salary" min="0" placeholder="5400">
+                    </div>
+
+                    <button type="submit" class="btn-primary">Adicionar</button>
+                </form>
+            </section>
+
+            <section class="table-card">
+                <h2>Registros cadastrados</h2>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Idade</th>
+                            <th>GER</th>
+                            <th>RIT</th>
+                            <th>FIN</th>
+                            <th>PAS</th>
+                            <th>CON</th>
+                            <th>DEF</th>
+                            <th>FÍS</th>
+                            <th>Valor</th>
+                            <th>Salário</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <% attributes.forEach(attribute=> { %>
+                            <tr>
+                                <td>
+                                    <%= formatDate(attribute.date) %>
+                                </td>
+                                <td>
+                                    <%= attribute.age || '-' %>
+                                </td>
+                                <td><strong>
+                                        <%= attribute.overall %>
+                                    </strong></td>
+                                <td>
+                                    <%= attribute.pace || '-' %>
+                                </td>
+                                <td>
+                                    <%= attribute.shooting || '-' %>
+                                </td>
+                                <td>
+                                    <%= attribute.passing || '-' %>
+                                </td>
+                                <td>
+                                    <%= attribute.dribbling || '-' %>
+                                </td>
+                                <td>
+                                    <%= attribute.defending || '-' %>
+                                </td>
+                                <td>
+                                    <%= attribute.physical || '-' %>
+                                </td>
+                                <td>
+                                    <%= attribute.market_value ? `€ ${attribute.market_value.toLocaleString('pt-BR')}`
+                                        : '-' %>
+                                </td>
+                                <td>
+                                    <%= attribute.salary ? `€ ${attribute.salary.toLocaleString('pt-BR')}` : '-' %>
+                                </td>
+
+                                <td class="actions-cell">
+                                    <a class="btn-small"
+                                        href="/gerenciar/evolucao/editar/<%= attribute.id %>">Editar</a>
+
+                                    <form action="/gerenciar/evolucao/excluir/<%= attribute.id %>" method="POST"
+                                        onsubmit="return confirm('Excluir este registro?')">
+                                        <button type="submit" class="btn-danger">Excluir</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+
+        <%- include('partials/footer') %>

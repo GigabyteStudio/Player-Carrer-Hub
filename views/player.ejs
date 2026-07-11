@@ -1,0 +1,734 @@
+<%- include('partials/header', { title }) %>
+    <%- include('partials/navbar') %>
+
+        <% function getRatingClass(value) { const rating=Number(value); if (!rating) return 'rating-empty' ; if (rating
+            < 80) return 'rating-yellow' ; if (rating < 88) return 'rating-green-light' ; if (rating < 96)
+            return 'rating-green-dark' ; if (rating < 99) return 'rating-gold' ; return 'rating-max' ; } %>
+
+            <main class="container">
+                <% if (!player) { %>
+                    <section class="empty-state">
+                        <h1>Nenhum jogador cadastrado</h1>
+                        <p>Cadastre os dados principais do jogador para começar.</p>
+                        <a class="btn-primary btn-link" href="/jogador/gerenciar">Cadastrar jogador</a>
+                    </section>
+                    <% } else { %>
+
+                        <section class="player-hero">
+                            <div class="player-photo-box">
+                                <% if (player.photo) { %>
+                                    <img src="<%= player.photo %>" class="player-photo">
+                                    <% } else { %>
+                                        <div class="player-photo-placeholder">Sem foto</div>
+                                        <% } %>
+                            </div>
+
+                            <div class="player-main-info">
+                                <span class="eyebrow">Perfil do Jogador</span>
+                                <h1>
+                                    <% if (player.shirt_number) { %>
+                                        <span class="shirt-number">#<%= player.shirt_number %></span>
+                                        <% } %>
+
+                                            <% if (player.nationality_flag) { %>
+                                                <img src="<%= player.nationality_flag %>" class="title-flag">
+                                                <% } %>
+
+                                                    <%= player.name %>
+                                </h1>
+
+                                <div class="player-tags">
+                                    <% if (player.preferred_foot) { %>
+                                        <span class="badge">Pé <%= player.preferred_foot %></span>
+                                        <% } %>
+
+                                            <% if (player.sponsor) { %>
+                                                <span class="badge">Patrocinador: <%= player.sponsor %></span>
+                                                <% } %>
+                                </div>
+
+                                <div class="overall-box">
+                                    <span>Overall</span>
+
+                                    <strong class="rating-box <%= getRatingClass(latestAttributes?.overall) %>">
+                                        <%= latestAttributes?.overall || '-' %>
+                                    </strong>
+                                </div>
+
+                                <div class="market-box">
+                                    <span>Valor de Mercado</span>
+
+                                    <strong>
+                                        <%= formatMoney(latestAttributes?.market_value) %>
+                                    </strong>
+                                </div>
+                            </div>
+
+                            <div class="current-club-card">
+                                <span class="eyebrow">Clube atual</span>
+
+                                <% if (currentTransfer?.club_logo) { %>
+                                    <img src="<%= currentTransfer.club_logo %>" class="club-large-logo">
+                                    <% } %>
+
+                                        <h2>
+                                            <%= currentTransfer?.club_name || 'Clube ainda não definido' %>
+                                        </h2>
+
+                                        <% if (currentTransfer?.league_name) { %>
+                                            <p>
+                                                <%= currentTransfer.league_name %>
+                                            </p>
+                                            <% } %>
+
+                                                <div class="club-meta">
+                                                    <div>
+                                                        <span>No time desde</span>
+                                                        <strong>
+                                                            <%= formatDate(currentTransfer?.date) %>
+                                                        </strong>
+                                                    </div>
+
+                                                    <div>
+                                                        <span>Contrato até</span>
+                                                        <strong>
+                                                            <%= formatDate(currentTransfer?.contract_until) %>
+                                                        </strong>
+                                                    </div>
+                                                </div>
+                            </div>
+                        </section>
+
+                        <section class="profile-grid">
+                            <div class="profile-card">
+                                <span class="card-label">Idade</span>
+                                <strong>
+                                    <%= player.age || '-' %>
+                                </strong>
+                            </div>
+
+                            <div class="profile-card">
+                                <span class="card-label">Altura</span>
+                                <strong>
+                                    <%= player.height || '-' %>
+                                </strong>
+                            </div>
+
+                            <div class="profile-card">
+                                <span class="card-label">Peso</span>
+                                <strong>
+                                    <%= player.weight || '-' %>
+                                </strong>
+                            </div>
+
+                            <div class="profile-card">
+                                <span class="card-label">Posições</span>
+                                <strong>
+                                    <%= player.positions || '-' %>
+                                </strong>
+                            </div>
+                        </section>
+
+                        <section class="content-card player-trophies-card">
+                            <div class="section-title">
+                                <h2>Troféus</h2>
+                                <a href="/trofeus" class="section-link">Ver todos</a>
+                            </div>
+
+                            <% if (trophies && trophies.length> 0) { %>
+                                <div class="trophies-carousel">
+                                    <% trophies.forEach(trophy=> { %>
+                                        <a href="/trofeus" class="player-trophy-item"
+                                            title="<%= trophy.quantity %>x <%= trophy.name %>">
+                                            <div class="player-trophy-image-box">
+                                                <% if (trophy.image) { %>
+                                                    <img src="<%= trophy.image %>" class="player-trophy-image">
+                                                    <% } else { %>
+                                                        <div class="player-trophy-placeholder">?</div>
+                                                        <% } %>
+
+                                                            <span class="player-trophy-quantity">
+                                                                <%= trophy.quantity %>
+                                                            </span>
+                                            </div>
+
+                                            <strong>
+                                                <%= trophy.name %>
+                                            </strong>
+                                        </a>
+                                        <% }) %>
+                                </div>
+                                <% } else { %>
+                                    <div class="placeholder-box">
+                                        Nenhum troféu cadastrado ainda.
+                                    </div>
+                                    <% } %>
+                        </section>
+
+                        <section class="content-card attributes-current-card">
+                            <div class="section-title">
+                                <h2>Atributos Atuais</h2>
+                                <a href="/evolucao" class="section-link">Ver tudo</a>
+                            </div>
+
+                            <% if (latestAttributes) { %>
+                                <div class="attributes-grid">
+                                    <div class="attribute-item">
+                                        <span>RIT</span>
+                                        <strong class="attribute-rating <%= getRatingClass(latestAttributes.pace) %>">
+                                            <%= latestAttributes.pace || '-' %>
+                                        </strong>
+                                    </div>
+
+                                    <div class="attribute-item">
+                                        <span>FIN</span>
+                                        <strong
+                                            class="attribute-rating <%= getRatingClass(latestAttributes.shooting) %>">
+                                            <%= latestAttributes.shooting || '-' %>
+                                        </strong>
+                                    </div>
+
+                                    <div class="attribute-item">
+                                        <span>PAS</span>
+                                        <strong
+                                            class="attribute-rating <%= getRatingClass(latestAttributes.passing) %>">
+                                            <%= latestAttributes.passing || '-' %>
+                                        </strong>
+                                    </div>
+
+                                    <div class="attribute-item">
+                                        <span>CON</span>
+                                        <strong
+                                            class="attribute-rating <%= getRatingClass(latestAttributes.dribbling) %>">
+                                            <%= latestAttributes.dribbling || '-' %>
+                                        </strong>
+                                    </div>
+
+                                    <div class="attribute-item">
+                                        <span>DEF</span>
+                                        <strong
+                                            class="attribute-rating <%= getRatingClass(latestAttributes.defending) %>">
+                                            <%= latestAttributes.defending || '-' %>
+                                        </strong>
+                                    </div>
+
+                                    <div class="attribute-item">
+                                        <span>FÍS</span>
+                                        <strong
+                                            class="attribute-rating <%= getRatingClass(latestAttributes.physical) %>">
+                                            <%= latestAttributes.physical || '-' %>
+                                        </strong>
+                                    </div>
+                                </div>
+                                <% } else { %>
+                                    <div class="placeholder-box">
+                                        Cadastre um registro em Evolução para exibir os atributos atuais.
+                                    </div>
+                                    <% } %>
+                        </section>
+
+                        <section class="section-grid">
+                            <div class="content-card skills-card">
+                                <div class="section-title">
+                                    <h2>Habilidades</h2>
+                                </div>
+
+                                <div class="skills-grid">
+                                    <div class="skill-row">
+                                        <span class="skill-label">Fintas</span>
+                                        <strong>
+                                            <% for (let i=1; i <=5; i++) { %>
+                                                <span
+                                                    class="<%= i <= (player.skill_moves || 0) ? 'star-filled' : 'star-empty' %>">★</span>
+                                                <% } %>
+                                        </strong>
+                                    </div>
+
+                                    <div class="skill-row">
+                                        <span class="skill-label">Perna Ruim</span>
+                                        <strong>
+                                            <% for (let i=1; i <=5; i++) { %>
+                                                <span
+                                                    class="<%= i <= (player.weak_foot || 0) ? 'star-filled' : 'star-empty' %>">★</span>
+                                                <% } %>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="content-card">
+                                <div class="section-title">
+                                    <h2>Evolução do Overall</h2>
+                                </div>
+
+                                <div class="overall-chart-summary">
+                                    <div>
+                                        <span>Overall mínimo</span>
+                                        <strong>
+                                            <%= overallSummary.min || '-' %>
+                                        </strong>
+                                    </div>
+
+                                    <div>
+                                        <span>Overall máximo</span>
+                                        <strong>
+                                            <%= overallSummary.max || '-' %>
+                                        </strong>
+                                    </div>
+                                </div>
+
+                                <% if (overallHistory && overallHistory.length> 1) { %>
+                                    <div class="overall-chart-wrap">
+                                        <svg id="overallChart" viewBox="0 0 520 220"></svg>
+                                        <div id="overallTooltip" class="chart-tooltip"></div>
+                                    </div>
+
+                                    <script type="application/json" id="overallHistoryData">
+                                        <%- JSON.stringify(overallHistory) %>
+                                    </script>
+                                    <% } else { %>
+                                        <div class="placeholder-box">
+                                            Cadastre pelo menos dois registros de evolução para gerar o gráfico.
+                                        </div>
+                                        <% } %>
+                            </div>
+                        </section>
+
+                        <section class="section-grid">
+                            <div class="content-card">
+                                <div class="section-title">
+                                    <h2>Resumo da Carreira</h2>
+                                    <a href="/estatisticas" class="section-link">Ver tudo</a>
+                                </div>
+
+                                <% if (careerStats && careerStats.length> 0) { %>
+                                    <table class="mini-stats-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Competição</th>
+                                                <th>J</th>
+                                                <th>G</th>
+                                                <th>A</th>
+                                                <th>Nota</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            <% careerStats.forEach(stat=> { %>
+                                                <tr>
+                                                    <td>
+                                                        <% if (stat.competition_logo) { %>
+                                                            <img src="<%= stat.competition_logo %>" class="table-flag">
+                                                            <% } %>
+                                                                <strong>
+                                                                    <%= stat.competition_name %>
+                                                                </strong>
+                                                    </td>
+
+                                                    <td>
+                                                        <%= stat.games || 0 %>
+                                                    </td>
+                                                    <td>
+                                                        <%= stat.goals || 0 %>
+                                                    </td>
+                                                    <td>
+                                                        <%= stat.assists || 0 %>
+                                                    </td>
+                                                    <td>
+                                                        <%= stat.average_rating ? Number(stat.average_rating).toFixed(2)
+                                                            : '-' %>
+                                                    </td>
+                                                </tr>
+                                                <% }) %>
+                                        </tbody>
+
+                                        <tfoot>
+                                            <tr>
+                                                <th>Total</th>
+                                                <th>
+                                                    <%= careerTotals.games %>
+                                                </th>
+                                                <th>
+                                                    <%= careerTotals.goals %>
+                                                </th>
+                                                <th>
+                                                    <%= careerTotals.assists %>
+                                                </th>
+                                                <th>
+                                                    <%= careerTotals.average_rating %>
+                                                </th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+
+                                    <div class="career-averages">
+                                        <span>
+                                            <%= careerTotals.goals_average %> gol/jogo
+                                        </span>
+                                        <span>
+                                            <%= careerTotals.assists_average %> assistência/jogo
+                                        </span>
+                                    </div>
+                                    <% } else { %>
+                                        <div class="placeholder-box">
+                                            Cadastre estatísticas para exibir o resumo da carreira.
+                                        </div>
+                                        <% } %>
+                            </div>
+
+                            <div class="content-card">
+                                <div class="section-title">
+                                    <h2>Valor de Mercado</h2>
+                                </div>
+
+                                <div class="market-chart-summary">
+                                    <div>
+                                        <span>Valor atual</span>
+                                        <strong>
+                                            <%= formatMoney(marketSummary.current) %>
+                                        </strong>
+                                    </div>
+
+                                    <div>
+                                        <span>Maior valor</span>
+                                        <strong>
+                                            <%= formatMoney(marketSummary.max) %>
+                                        </strong>
+                                    </div>
+                                </div>
+
+                                <% if (marketHistory && marketHistory.length> 1) { %>
+                                    <div class="market-chart-wrap">
+                                        <svg id="marketChart" viewBox="0 0 520 220"></svg>
+                                        <div id="marketTooltip" class="chart-tooltip"></div>
+                                    </div>
+
+                                    <script type="application/json" id="marketHistoryData">
+                                        <%- JSON.stringify(marketHistory) %>
+                                    </script>
+
+                                    <script type="application/json" id="marketTransfersData">
+                                        <%- JSON.stringify(marketTransfers) %>
+                                    </script>
+                                    <% } else { %>
+                                        <div class="placeholder-box">
+                                            Cadastre pelo menos dois registros de evolução com valor de mercado para
+                                            gerar o gráfico.
+                                        </div>
+                                        <% } %>
+                            </div>
+                        </section>
+
+                        <section class="content-card">
+                            <div class="section-title">
+                                <h2>Campeonatos</h2>
+                                <span>Histórico</span>
+                            </div>
+
+                            <% if (campaigns && campaigns.length> 0) { %>
+                                <div class="campaigns-table-wrap">
+                                    <table class="mini-campaigns-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Temporada</th>
+                                                <th>Competição</th>
+                                                <th>Time</th>
+                                                <th>Categoria</th>
+                                                <th>Posição</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            <% campaigns.forEach(campaign=> { %>
+                                                <tr>
+                                                    <td>
+                                                        <%= campaign.season_name %>
+                                                    </td>
+
+                                                    <td>
+                                                        <% if (campaign.competition_logo) { %>
+                                                            <img src="<%= campaign.competition_logo %>"
+                                                                class="table-flag">
+                                                            <% } %>
+                                                                <strong>
+                                                                    <%= campaign.competition_name %>
+                                                                </strong>
+                                                    </td>
+
+                                                    <td>
+                                                        <% if (campaign.club_logo) { %>
+                                                            <img src="<%= campaign.club_logo %>" class="table-flag">
+                                                            <% } %>
+                                                                <%= campaign.club_name %>
+                                                    </td>
+
+                                                    <td>
+                                                        <span class="badge">
+                                                            <%= campaign.competition_category || '-' %>
+                                                        </span>
+                                                    </td>
+
+                                                    <td>
+                                                        <%= campaign.final_position || '-' %>
+                                                    </td>
+                                                </tr>
+                                                <% }) %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <% } else { %>
+                                    <div class="placeholder-box">
+                                        Nenhum campeonato cadastrado ainda.
+                                    </div>
+                                    <% } %>
+                        </section>
+
+                        <% } %>
+            </main>
+
+            <script>
+                const overallHistoryElement = document.getElementById('overallHistoryData');
+
+                if (overallHistoryElement) {
+                    const data = JSON.parse(overallHistoryElement.textContent);
+
+                    if (data.length > 1) {
+                        const svg = document.getElementById('overallChart');
+                        const tooltip = document.getElementById('overallTooltip');
+
+                        const width = 520;
+                        const height = 220;
+                        const padding = 28;
+
+                        const values = data.map(item => Number(item.overall));
+                        const min = Math.min(...values);
+                        const max = Math.max(...values);
+
+                        const yMin = Math.max(0, min - 3);
+                        const yMax = Math.min(99, max + 3);
+
+                        function x(index) {
+                            return padding + (index / (data.length - 1)) * (width - padding * 2);
+                        }
+
+                        function y(value) {
+                            return height - padding - ((value - yMin) / (yMax - yMin)) * (height - padding * 2);
+                        }
+
+                        const points = data.map((item, index) => {
+                            return `${x(index)},${y(Number(item.overall))}`;
+                        }).join(' ');
+
+                        const polygonPoints = `
+                        ${padding},${height - padding}
+                        ${points}
+                        ${width - padding},${height - padding}
+                        `;
+
+                        svg.innerHTML = `
+                        <polygon 
+                        points="${polygonPoints}" 
+                        fill="rgba(11,31,58,.18)"
+                        ></polygon>
+
+                        <polyline 
+                        points="${points}" 
+                        fill="none" 
+                        stroke="#0b1f3a" 
+                        stroke-width="4" 
+                        stroke-linecap="round" 
+                        stroke-linejoin="round"
+                        ></polyline>
+
+                        ${data.map((item, index) => `
+                        <circle 
+                        cx="${x(index)}" 
+                        cy="${y(Number(item.overall))}" 
+                        r="6" 
+                        class="overall-chart-point"
+                        data-season="${item.season_name || '-'}"
+                        data-date="${item.date}"
+                        data-value="${item.overall}"
+                        ></circle>
+                        `).join('')}
+                        `;
+
+                        svg.querySelectorAll('.overall-chart-point').forEach(point => {
+                            point.addEventListener('mouseenter', () => {
+                                tooltip.innerHTML = `
+                    <strong>${point.dataset.value} OVR</strong><br>
+                    Temporada: ${point.dataset.season}<br>
+                    Data: ${point.dataset.date.split('-').reverse().join('/')}
+                    `;
+
+                                tooltip.style.display = 'block';
+                            });
+
+                            point.addEventListener('mousemove', event => {
+                                const rect = svg.getBoundingClientRect();
+                                tooltip.style.left = `${event.clientX - rect.left + 12}px`;
+                                tooltip.style.top = `${event.clientY - rect.top - 8}px`;
+                            });
+
+                            point.addEventListener('mouseleave', () => {
+                                tooltip.style.display = 'none';
+                            });
+                        });
+                    }
+                }
+            </script>
+
+            <script>
+                const marketHistoryElement = document.getElementById('marketHistoryData');
+                const marketTransfersElement = document.getElementById('marketTransfersData');
+
+                if (marketHistoryElement && marketTransfersElement) {
+                    const data = JSON.parse(marketHistoryElement.textContent);
+                    const transfers = JSON.parse(marketTransfersElement.textContent);
+
+                    if (data.length > 1) {
+                        const svg = document.getElementById('marketChart');
+                        const tooltip = document.getElementById('marketTooltip');
+
+                        const width = 520;
+                        const height = 220;
+                        const padding = 30;
+
+                        const values = data.map(item => Number(item.market_value));
+                        const min = Math.min(...values);
+                        const max = Math.max(...values);
+
+                        const yMin = Math.max(0, min - (max * 0.08));
+                        const yMax = max + (max * 0.12);
+
+                        function x(index) {
+                            return padding + (index / (data.length - 1)) * (width - padding * 2);
+                        }
+
+                        function y(value) {
+                            return height - padding - ((value - yMin) / (yMax - yMin)) * (height - padding * 2);
+                        }
+
+                        function formatMoneyShort(value) {
+                            const number = Number(value);
+
+                            if (number >= 1000000) {
+                                return `€ ${(number / 1000000).toLocaleString('pt-BR', {
+                                    minimumFractionDigits: 1,
+                                    maximumFractionDigits: 1
+                                })} mi`;
+                            }
+
+                            if (number >= 1000) {
+                                return `€ ${(number / 1000).toLocaleString('pt-BR', {
+                                    maximumFractionDigits: 0
+                                })} mil`;
+                            }
+
+                            return `€ ${number.toLocaleString('pt-BR')}`;
+                        }
+
+                        function formatDateBR(date) {
+                            return String(date).split('-').reverse().join('/');
+                        }
+
+                        const points = data.map((item, index) => {
+                            return `${x(index)},${y(Number(item.market_value))}`;
+                        }).join(' ');
+
+                        const polygonPoints = `
+        ${padding},${height - padding}
+        ${points}
+        ${width - padding},${height - padding}
+      `;
+
+                        const transferMarkers = transfers
+                            .map(transfer => {
+                                const index = data.findIndex(item => item.date === transfer.date);
+
+                                if (index === -1) return '';
+
+                                const item = data[index];
+                                const cx = x(index);
+                                const cy = y(Number(item.market_value));
+
+                                if (transfer.club_logo) {
+                                    return `
+                                <image 
+                                href="${transfer.club_logo}" 
+                                x="${cx - 13}" 
+                                y="${cy - 34}" 
+                                width="26" 
+                                height="26"
+                                class="market-transfer-logo"
+                                ></image>
+                                `;
+                                }
+
+                                return `
+                                <circle 
+                                cx="${cx}" 
+                                cy="${cy - 22}" 
+                                r="8" 
+                                fill="#0b1f3a"
+                                ></circle>
+                                `;
+                            })
+                            .join('');
+
+                        svg.innerHTML = `
+                        <polygon 
+                        points="${polygonPoints}" 
+                        fill="rgba(11,31,58,.18)"
+                        ></polygon>
+
+                        <polyline 
+                        points="${points}" 
+                        fill="none" 
+                        stroke="#0b1f3a" 
+                        stroke-width="4" 
+                        stroke-linecap="round" 
+                        stroke-linejoin="round"
+                        ></polyline>
+
+                        ${data.map((item, index) => `
+                        <circle 
+                        cx="${x(index)}" 
+                        cy="${y(Number(item.market_value))}" 
+                        r="5" 
+                        class="market-chart-point"
+                        data-season="${item.season_name || '-'}"
+                        data-date="${item.date}"
+                        data-value="${item.market_value}"
+                        ></circle>
+                        `).join('')}
+
+                        ${transferMarkers}
+                        `;
+
+                        svg.querySelectorAll('.market-chart-point').forEach(point => {
+                            point.addEventListener('mouseenter', () => {
+                                tooltip.innerHTML = `
+                        <strong>${formatMoneyShort(point.dataset.value)}</strong><br>
+                        Temporada: ${point.dataset.season}<br>
+                        Data: ${formatDateBR(point.dataset.date)}
+                        `;
+
+                                tooltip.style.display = 'block';
+                            });
+
+                            point.addEventListener('mousemove', event => {
+                                const rect = svg.getBoundingClientRect();
+                                tooltip.style.left = `${event.clientX - rect.left + 12}px`;
+                                tooltip.style.top = `${event.clientY - rect.top - 8}px`;
+                            });
+
+                            point.addEventListener('mouseleave', () => {
+                                tooltip.style.display = 'none';
+                            });
+                        });
+                    }
+                }
+            </script>
+
+            <%- include('partials/footer') %>

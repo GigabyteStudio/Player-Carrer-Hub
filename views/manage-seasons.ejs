@@ -1,0 +1,90 @@
+<%- include('partials/header', { title }) %>
+    <%- include('partials/navbar') %>
+
+        <main class="container">
+            <section class="page-header">
+                <h1>Temporadas</h1>
+                <p>Cadastre as temporadas da carreira.</p>
+            </section>
+
+            <section class="form-card">
+                <h2>Adicionar Temporada</h2>
+
+                <form action="/gerenciar/temporadas/adicionar" method="POST" class="form-grid">
+                    <div class="form-group">
+                        <label>Nome</label>
+                        <input type="text" name="name" placeholder="2025/2026" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Início</label>
+                        <input type="date" name="start_date">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Fim</label>
+                        <input type="date" name="end_date">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Temporada atual?</label>
+                        <select name="is_current">
+                            <option value="">Não</option>
+                            <option value="1">Sim</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Adicionar</button>
+                </form>
+            </section>
+
+            <section class="table-card">
+                <h2>Temporadas cadastradas</h2>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Início</th>
+                            <th>Fim</th>
+                            <th>Atual</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <% seasons.forEach(season=> { %>
+                            <tr>
+                                <td>
+                                    <%= season.name %>
+                                </td>
+                                <td>
+                                    <%= formatDate(season.start_date) %>
+                                </td>
+                                <td>
+                                    <%= formatDate(season.end_date) %>
+                                </td>
+                                <td>
+                                    <% if (season.is_current) { %>
+                                        <span class="badge">Atual</span>
+                                        <% } else { %>
+                                            -
+                                            <% } %>
+                                </td>
+
+                                <td class="actions-cell">
+                                    <a class="btn-small" href="/gerenciar/temporadas/editar/<%= season.id %>">Editar</a>
+
+                                    <form action="/gerenciar/temporadas/excluir/<%= season.id %>" method="POST"
+                                        onsubmit="return confirm('Excluir esta temporada?')">
+                                        <button type="submit" class="btn-danger">Excluir</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+
+        <%- include('partials/footer') %>

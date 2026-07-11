@@ -1,0 +1,310 @@
+<%- include('partials/header', { title }) %>
+    <%- include('partials/navbar') %>
+
+        <main class="container">
+            <section class="page-header">
+                <h1>Estatísticas</h1>
+                <p>Desempenho por competição, temporada e carreira.</p>
+            </section>
+
+            <section class="table-card">
+                <h2>Dados de Toda a Carreira</h2>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Campeonato</th>
+                            <th>J</th>
+                            <th>G</th>
+                            <th>G/J</th>
+                            <th>A</th>
+                            <th>A/J</th>
+                            <th>CA</th>
+                            <th>2º CA</th>
+                            <th>CV</th>
+                            <th>Nota</th>
+                            <th>Artilheiro</th>
+                            <th>Garçom</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <% careerStats.forEach(stat=> { %>
+                            <tr>
+                                <td>
+                                    <% if (stat.competition_logo) { %>
+                                        <img src="<%= stat.competition_logo %>" class="table-flag">
+                                        <% } %>
+                                            <strong>
+                                                <%= stat.competition_name %>
+                                            </strong>
+                                </td>
+
+                                <td>
+                                    <%= stat.games || 0 %>
+                                </td>
+                                <td>
+                                    <%= stat.goals || 0 %>
+                                </td>
+                                <td>
+                                    <%= stat.games ? (stat.goals / stat.games).toFixed(2) : '0.00' %>
+                                </td>
+                                <td>
+                                    <%= stat.assists || 0 %>
+                                </td>
+                                <td>
+                                    <%= stat.games ? (stat.assists / stat.games).toFixed(2) : '0.00' %>
+                                </td>
+                                <td>
+                                    <%= stat.yellow_cards || 0 %>
+                                </td>
+                                <td>
+                                    <%= stat.second_yellow_cards || 0 %>
+                                </td>
+                                <td>
+                                    <%= stat.red_cards || 0 %>
+                                </td>
+                                <td>
+                                    <%= stat.average_rating ? Number(stat.average_rating).toFixed(2) : '-' %>
+                                </td>
+                                <td>
+                                    <%= stat.top_scorer || 0 %>
+                                </td>
+                                <td>
+                                    <%= stat.top_assister || 0 %>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+
+                    <tfoot>
+                        <tr>
+                            <th>Total</th>
+                            <th>
+                                <%= careerTotals.games %>
+                            </th>
+                            <th>
+                                <%= careerTotals.goals %>
+                            </th>
+                            <th>
+                                <%= careerTotals.goals_average %>
+                            </th>
+                            <th>
+                                <%= careerTotals.assists %>
+                            </th>
+                            <th>
+                                <%= careerTotals.assists_average %>
+                            </th>
+                            <th>
+                                <%= careerTotals.yellow_cards %>
+                            </th>
+                            <th>
+                                <%= careerTotals.second_yellow_cards %>
+                            </th>
+                            <th>
+                                <%= careerTotals.red_cards %>
+                            </th>
+                            <th>
+                                <%= careerTotals.average_rating %>
+                            </th>
+                            <th>
+                                <%= careerTotals.top_scorer %>
+                            </th>
+                            <th>
+                                <%= careerTotals.top_assister %>
+                            </th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </section>
+
+            <section class="form-card">
+                <h2>Filtrar Estatísticas</h2>
+
+                <form action="/estatisticas" method="GET" class="form-grid">
+                    <div class="form-group">
+                        <label>Temporada</label>
+                        <select name="season_id">
+                            <option value="">Todas as temporadas</option>
+                            <% seasons.forEach(season=> { %>
+                                <option value="<%= season.id %>" <%=String(selectedSeasonId)===String(season.id)
+                                    ? 'selected' : '' %>>
+                                    <%= season.name %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Time</label>
+                        <select name="club_id">
+                            <option value="">Todos os times</option>
+                            <% clubs.forEach(club=> { %>
+                                <option value="<%= club.id %>" <%=String(selectedClubId)===String(club.id) ? 'selected'
+                                    : '' %>>
+                                    <%= club.name %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Categoria</label>
+                        <select name="category">
+                            <option value="">Todas as categorias</option>
+
+                            <% categories.forEach(item=> { %>
+                                <option value="<%= item.category %>" <%=selectedCategory===item.category ? 'selected'
+                                    : '' %>
+                                    >
+                                    <%= item.category %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Campeonato</label>
+                        <select name="competition_id">
+                            <option value="">Todos os campeonatos</option>
+                            <% competitions.forEach(competition=> { %>
+                                <option value="<%= competition.id %>"
+                                    <%=String(selectedCompetitionId)===String(competition.id) ? 'selected' : '' %>>
+                                    <%= competition.name %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Filtrar</button>
+
+                    <a href="/estatisticas" class="btn-small btn-link">Limpar filtro</a>
+                </form>
+            </section>
+
+            <section class="table-card">
+                <h2>Tabela Completa</h2>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Temporada</th>
+                            <th>Campeonato</th>
+                            <th>Time</th>
+                            <th>J</th>
+                            <th>G</th>
+                            <th>G/J</th>
+                            <th>A</th>
+                            <th>A/J</th>
+                            <th>CA</th>
+                            <th>2º CA</th>
+                            <th>CV</th>
+                            <th>Nota</th>
+                            <th>Artilheiro</th>
+                            <th>Garçom</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <% filteredStats.forEach(stat=> { %>
+                            <tr>
+                                <td>
+                                    <%= stat.season_name %>
+                                </td>
+
+                                <td>
+                                    <% if (stat.competition_logo) { %>
+                                        <img src="<%= stat.competition_logo %>" class="table-flag">
+                                        <% } %>
+                                            <strong>
+                                                <%= stat.competition_name %>
+                                            </strong>
+                                </td>
+
+                                <td>
+                                    <% if (stat.club_logo) { %>
+                                        <img src="<%= stat.club_logo %>" class="table-flag">
+                                        <% } %>
+                                            <%= stat.club_name %>
+                                </td>
+
+                                <td>
+                                    <%= stat.games || 0 %>
+                                </td>
+                                <td>
+                                    <%= stat.goals || 0 %>
+                                </td>
+                                <td>
+                                    <%= stat.games ? (stat.goals / stat.games).toFixed(2) : '0.00' %>
+                                </td>
+                                <td>
+                                    <%= stat.assists || 0 %>
+                                </td>
+                                <td>
+                                    <%= stat.games ? (stat.assists / stat.games).toFixed(2) : '0.00' %>
+                                </td>
+                                <td>
+                                    <%= stat.yellow_cards || 0 %>
+                                </td>
+                                <td>
+                                    <%= stat.second_yellow_cards || 0 %>
+                                </td>
+                                <td>
+                                    <%= stat.red_cards || 0 %>
+                                </td>
+                                <td>
+                                    <%= stat.average_rating || '-' %>
+                                </td>
+                                <td>
+                                    <%= stat.top_scorer ? 'Sim' : '-' %>
+                                </td>
+                                <td>
+                                    <%= stat.top_assister ? 'Sim' : '-' %>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+
+                    <tfoot>
+                        <tr>
+                            <th colspan="3">Total</th>
+                            <th>
+                                <%= filteredTotals.games %>
+                            </th>
+                            <th>
+                                <%= filteredTotals.goals %>
+                            </th>
+                            <th>
+                                <%= filteredTotals.goals_average %>
+                            </th>
+                            <th>
+                                <%= filteredTotals.assists %>
+                            </th>
+                            <th>
+                                <%= filteredTotals.assists_average %>
+                            </th>
+                            <th>
+                                <%= filteredTotals.yellow_cards %>
+                            </th>
+                            <th>
+                                <%= filteredTotals.second_yellow_cards %>
+                            </th>
+                            <th>
+                                <%= filteredTotals.red_cards %>
+                            </th>
+                            <th>
+                                <%= filteredTotals.average_rating %>
+                            </th>
+                            <th>
+                                <%= filteredTotals.top_scorer %>
+                            </th>
+                            <th>
+                                <%= filteredTotals.top_assister %>
+                            </th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </section>
+        </main>
+
+        <%- include('partials/footer') %>

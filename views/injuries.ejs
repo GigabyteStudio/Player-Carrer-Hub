@@ -1,0 +1,72 @@
+<%- include('partials/header', { title }) %>
+    <%- include('partials/navbar') %>
+
+        <main class="container">
+            <section class="page-header">
+                <h1>Histórico de Lesões</h1>
+                <p>Lesões, tempo fora e jogos perdidos ao longo da carreira.</p>
+            </section>
+
+            <section class="cards-grid">
+                <div class="card">
+                    <span class="card-label">Total de Lesões</span>
+                    <strong>
+                        <%= summary.total_injuries || 0 %>
+                    </strong>
+                </div>
+
+                <div class="card">
+                    <span class="card-label">Total de Dias Lesionado</span>
+                    <strong>
+                        <%= summary.total_days_injured || 0 %>
+                    </strong>
+                </div>
+
+                <div class="card">
+                    <span class="card-label">Total de Jogos Perdidos</span>
+                    <strong>
+                        <%= summary.total_games_missed || 0 %>
+                    </strong>
+                </div>
+            </section>
+
+            <section class="table-card">
+                <h2>Lesões</h2>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Temporada</th>
+                            <th>Lesão</th>
+                            <th>Data da Lesão</th>
+                            <th>Dias Lesionado</th>
+                            <th>Jogos Perdidos</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <% injuries.forEach(injury=> { %>
+                            <tr>
+                                <td>
+                                    <%= injury.season_name %>
+                                </td>
+                                <td>
+                                    <%= injury.injury_name %>
+                                </td>
+                                <td>
+                                    <%= formatDate(injury.injury_date) %>
+                                </td>
+                                <td>
+                                    <%= injury.days_injured || 0 %>
+                                </td>
+                                <td>
+                                    <%= injury.games_missed || 0 %>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+
+        <%- include('partials/footer') %>

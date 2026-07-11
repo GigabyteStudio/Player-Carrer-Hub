@@ -1,0 +1,165 @@
+<%- include('partials/header', { title }) %>
+    <%- include('partials/navbar') %>
+
+        <% function getRatingClass(value) { const rating=Number(value); if (!rating) return 'rating-empty' ; if (rating
+            < 80) return 'rating-yellow' ; if (rating < 88) return 'rating-green-light' ; if (rating < 96)
+            return 'rating-green-dark' ; if (rating < 99) return 'rating-gold' ; return 'rating-max' ; } %>
+
+            <% function getDiffClass(value) { const diff=Number(value); if (diff> 0) return 'diff-positive';
+                if (diff < 0) return 'diff-negative' ; return 'diff-neutral' ; } function formatDiff(value) { const
+                    diff=Number(value); if (diff> 0) return `+${diff}`;
+                    if (diff < 0) return `${diff}`; return '0' ; } %>
+
+                        <main class="container">
+                            <section class="page-header">
+                                <h1>Evolução</h1>
+                                <p>Histórico de overall, atributos e desenvolvimento do jogador.</p>
+                            </section>
+
+                            <section class="content-card">
+                                <div class="section-title">
+                                    <h2>Atributos Atuais</h2>
+                                    <span>Registro mais recente</span>
+                                </div>
+
+                                <% if (latestAttributes) { %>
+                                    <div class="current-attributes-layout">
+                                        <div class="attribute-item attribute-overall-center">
+                                            <span>GER</span>
+                                            <strong
+                                                class="attribute-rating <%= getRatingClass(latestAttributes.overall) %>">
+                                                <%= latestAttributes.overall || '-' %>
+                                            </strong>
+                                        </div>
+
+                                        <div class="current-attributes-grid">
+                                            <div class="attribute-item">
+                                                <span>RIT</span>
+                                                <strong
+                                                    class="attribute-rating <%= getRatingClass(latestAttributes.pace) %>">
+                                                    <%= latestAttributes.pace || '-' %>
+                                                </strong>
+                                            </div>
+
+                                            <div class="attribute-item">
+                                                <span>FIN</span>
+                                                <strong
+                                                    class="attribute-rating <%= getRatingClass(latestAttributes.shooting) %>">
+                                                    <%= latestAttributes.shooting || '-' %>
+                                                </strong>
+                                            </div>
+
+                                            <div class="attribute-item">
+                                                <span>PAS</span>
+                                                <strong
+                                                    class="attribute-rating <%= getRatingClass(latestAttributes.passing) %>">
+                                                    <%= latestAttributes.passing || '-' %>
+                                                </strong>
+                                            </div>
+
+                                            <div class="attribute-item">
+                                                <span>CON</span>
+                                                <strong
+                                                    class="attribute-rating <%= getRatingClass(latestAttributes.dribbling) %>">
+                                                    <%= latestAttributes.dribbling || '-' %>
+                                                </strong>
+                                            </div>
+
+                                            <div class="attribute-item">
+                                                <span>DEF</span>
+                                                <strong
+                                                    class="attribute-rating <%= getRatingClass(latestAttributes.defending) %>">
+                                                    <%= latestAttributes.defending || '-' %>
+                                                </strong>
+                                            </div>
+
+                                            <div class="attribute-item">
+                                                <span>FÍS</span>
+                                                <strong
+                                                    class="attribute-rating <%= getRatingClass(latestAttributes.physical) %>">
+                                                    <%= latestAttributes.physical || '-' %>
+                                                </strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% } else { %>
+                                        <div class="placeholder-box">
+                                            Nenhum registro de evolução cadastrado ainda.
+                                        </div>
+                                        <% } %>
+                            </section>
+
+                            <section class="content-card evolution-timeline-card">
+                                <div class="section-title">
+                                    <h2>Avanço dos Atributos</h2>
+                                    <span>Linha do tempo</span>
+                                </div>
+
+                                <% if (history.length> 0) { %>
+                                    <div class="attributes-timeline">
+                                        <% history.forEach((record, index)=> { %>
+                                            <div class="timeline-record">
+                                                <div class="timeline-record-header">
+                                                    <strong>
+                                                        <%= record.season_name || '-' %>
+                                                    </strong>
+                                                    <span>
+                                                        <%= formatDate(record.date) %>
+                                                    </span>
+                                                </div>
+
+                                                <div class="timeline-attributes-list">
+                                                    <% attributeList.forEach(attribute=> { %>
+                                                        <% const currentValue=record[attribute.key]; const
+                                                            previousRecord=index> 0 ? history[index - 1] : null;
+                                                            const previousValue = previousRecord ?
+                                                            previousRecord[attribute.key] : null;
+
+                                                            let diff = null;
+
+                                                            if (
+                                                            currentValue !== null &&
+                                                            currentValue !== undefined &&
+                                                            previousValue !== null &&
+                                                            previousValue !== undefined
+                                                            ) {
+                                                            diff = Number(currentValue) - Number(previousValue);
+                                                            }
+                                                            %>
+
+                                                            <div class="timeline-attribute-row">
+                                                                <span>
+                                                                    <%= attribute.label %>
+                                                                </span>
+
+                                                                <div class="timeline-value-wrap">
+                                                                    <strong
+                                                                        class="comparison-rating <%= getRatingClass(currentValue) %>">
+                                                                        <%= currentValue ?? '-' %>
+                                                                    </strong>
+
+                                                                    <% if (diff !==null) { %>
+                                                                        <small
+                                                                            class="attribute-diff <%= getDiffClass(diff) %>">
+                                                                            (<%= formatDiff(diff) %>)
+                                                                        </small>
+                                                                        <% } %>
+                                                                </div>
+                                                            </div>
+                                                            <% }) %>
+                                                </div>
+                                            </div>
+
+                                            <% if (index < history.length - 1) { %>
+                                                <div class="timeline-arrow">→</div>
+                                                <% } %>
+                                                    <% }) %>
+                                    </div>
+                                    <% } else { %>
+                                        <div class="placeholder-box">
+                                            Nenhum registro de evolução cadastrado ainda.
+                                        </div>
+                                        <% } %>
+                            </section>
+
+                            <%- include('partials/footer') %>

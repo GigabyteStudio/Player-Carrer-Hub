@@ -1,0 +1,112 @@
+<%- include('partials/header', { title }) %>
+    <%- include('partials/navbar') %>
+
+        <main class="container">
+            <section class="page-header">
+                <h1>Competições</h1>
+                <p>Cadastre ligas, copas e torneios da carreira.</p>
+            </section>
+
+            <section class="form-card">
+                <h2>Adicionar Competição</h2>
+
+                <form action="/gerenciar/competicoes/adicionar" method="POST" enctype="multipart/form-data"
+                    class="form-grid">
+                    <div class="form-group">
+                        <label>Nome</label>
+                        <input type="text" name="name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Categoria</label>
+                        <select name="category" required>
+                            <option value="">Selecione</option>
+                            <option value="Liga">Liga</option>
+                            <option value="Copa">Copa</option>
+                            <option value="Copa da Liga">Copa da Liga</option>
+                            <option value="Continental">Continental</option>
+                            <option value="Amistoso">Amistoso</option>
+                            <option value="Seleção">Seleção</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>País/Região</label>
+                        <select name="country_id">
+                            <option value="">Selecione</option>
+                            <% countries.forEach(country=> { %>
+                                <option value="<%= country.id %>">
+                                    <%= country.name %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Logo</label>
+                        <input type="file" name="logo" accept="image/*">
+                    </div>
+
+                    <button type="submit" class="btn-primary">Adicionar</button>
+                </form>
+            </section>
+
+            <section class="table-card">
+                <h2>Competições cadastradas</h2>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Logo</th>
+                            <th>Nome</th>
+                            <th>Categoria</th>
+                            <th>País/Região</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <% competitions.forEach(competition=> { %>
+                            <tr>
+                                <td>
+                                    <% if (competition.logo) { %>
+                                        <img src="<%= competition.logo %>" class="table-logo">
+                                        <% } else { %>
+                                            -
+                                            <% } %>
+                                </td>
+
+                                <td>
+                                    <%= competition.name %>
+                                </td>
+
+                                <td>
+                                    <span class="badge">
+                                        <%= competition.category || '-' %>
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <% if (competition.country_flag) { %>
+                                        <img src="<%= competition.country_flag %>" class="table-flag">
+                                        <% } %>
+                                            <%= competition.country_name || '-' %>
+                                </td>
+
+                                <td class="actions-cell">
+                                    <a class="btn-small"
+                                        href="/gerenciar/competicoes/editar/<%= competition.id %>">Editar</a>
+
+                                    <form action="/gerenciar/competicoes/excluir/<%= competition.id %>" method="POST"
+                                        onsubmit="return confirm('Excluir esta competição?')">
+                                        <button type="submit" class="btn-danger">Excluir</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+
+        <%- include('partials/footer') %>

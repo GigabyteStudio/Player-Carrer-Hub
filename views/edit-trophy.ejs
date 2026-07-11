@@ -1,0 +1,43 @@
+<%- include('partials/header', { title }) %>
+    <%- include('partials/navbar') %>
+
+        <main class="container">
+            <section class="page-header">
+                <h1>Editar Troféu</h1>
+                <p>Altere nome, imagem e importância.</p>
+            </section>
+
+            <section class="form-card">
+                <form action="/gerenciar/trofeus/editar-trofeu/<%= trophy.id %>" method="POST"
+                    enctype="multipart/form-data" class="form-grid">
+                    <div class="form-group">
+                        <label>Nome</label>
+                        <input type="text" name="name" value="<%= trophy.name %>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Peso / Importância</label>
+                        <input type="number" name="importance" value="<%= trophy.importance %>" min="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Imagem atual</label>
+                        <% if (trophy.image) { %>
+                            <img src="<%= trophy.image %>" class="table-logo">
+                            <% } else { %>
+                                <span>-</span>
+                                <% } %>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nova imagem</label>
+                        <input type="hidden" name="current_image" value="<%= trophy.image || '' %>">
+                        <input type="file" name="image" accept="image/*">
+                    </div>
+
+                    <button type="submit" class="btn-primary">Salvar alterações</button>
+                </form>
+            </section>
+        </main>
+
+        <%- include('partials/footer') %>

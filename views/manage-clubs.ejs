@@ -1,0 +1,112 @@
+<%- include('partials/header', { title }) %>
+    <%- include('partials/navbar') %>
+
+        <main class="container">
+            <section class="page-header">
+                <h1>Clubes e Seleções</h1>
+                <p>Cadastre clubes e seleções usados na carreira.</p>
+            </section>
+
+            <section class="form-card">
+                <h2>Adicionar Clube/Seleção</h2>
+
+                <form action="/gerenciar/clubes/adicionar" method="POST" enctype="multipart/form-data"
+                    class="form-grid">
+                    <div class="form-group">
+                        <label>Nome</label>
+                        <input type="text" name="name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tipo</label>
+                        <select name="type" required>
+                            <option value="Clube">Clube</option>
+                            <option value="Seleção">Seleção</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Liga</label>
+                        <select name="league_id">
+                            <option value="">Nenhuma</option>
+                            <% leagues.forEach(league=> { %>
+                                <option value="<%= league.id %>">
+                                    <%= league.name %>
+                                        <%= league.country_name ? `(${league.country_name})` : '' %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Escudo/Bandeira</label>
+                        <input type="file" name="logo" accept="image/*">
+                    </div>
+
+                    <button type="submit" class="btn-primary">Adicionar</button>
+                </form>
+            </section>
+
+            <section class="table-card">
+                <h2>Cadastrados</h2>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Imagem</th>
+                            <th>Nome</th>
+                            <th>Tipo</th>
+                            <th>Liga</th>
+                            <th>País</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <% clubs.forEach(club=> { %>
+                            <tr>
+                                <td>
+                                    <% if (club.logo) { %>
+                                        <img src="<%= club.logo %>" class="table-logo">
+                                        <% } else { %>
+                                            -
+                                            <% } %>
+                                </td>
+
+                                <td>
+                                    <%= club.name %>
+                                </td>
+
+                                <td>
+                                    <span class="badge">
+                                        <%= club.type || 'Clube' %>
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <%= club.league_name || '-' %>
+                                </td>
+
+                                <td>
+                                    <% if (club.country_flag) { %>
+                                        <img src="<%= club.country_flag %>" class="table-flag">
+                                        <% } %>
+                                            <%= club.country_name || '-' %>
+                                </td>
+
+                                <td class="actions-cell">
+                                    <a class="btn-small" href="/gerenciar/clubes/editar/<%= club.id %>">Editar</a>
+
+                                    <form action="/gerenciar/clubes/excluir/<%= club.id %>" method="POST"
+                                        onsubmit="return confirm('Excluir este cadastro?')">
+                                        <button type="submit" class="btn-danger">Excluir</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+
+        <%- include('partials/footer') %>

@@ -1,0 +1,75 @@
+<%- include('partials/header', { title }) %>
+    <%- include('partials/navbar') %>
+
+        <main class="container">
+            <section class="page-header">
+                <h1>Troféus e Conquistas</h1>
+                <p>Títulos, artilharias, prêmios e conquistas individuais.</p>
+            </section>
+
+            <section class="trophies-grid">
+                <% trophyGroups.forEach(trophy=> { %>
+                    <article class="trophy-card">
+                        <div class="trophy-card-header">
+                            <h2>
+                                <%= trophy.quantity %>x <%= trophy.name %>
+                            </h2>
+                        </div>
+
+                        <div class="trophy-card-body">
+                            <div class="trophy-image-box">
+                                <% if (trophy.image) { %>
+                                    <img src="<%= trophy.image %>" class="trophy-image">
+                                    <% } else { %>
+                                        <div class="trophy-placeholder">Sem imagem</div>
+                                        <% } %>
+                            </div>
+
+                            <div class="trophy-details">
+                                <% const entries=entriesByTrophy[trophy.id] || []; %>
+
+                                    <% if (entries.length===0) { %>
+                                        <p>Nenhuma conquista cadastrada.</p>
+                                        <% } %>
+
+                                            <% entries.forEach(entry=> { %>
+                                                <div class="trophy-entry-line">
+                                                    <strong>
+                                                        <%= entry.season_name || '-' %>
+                                                    </strong>
+
+                                                    <% if (entry.club_logo) { %>
+                                                        <img src="<%= entry.club_logo %>" class="table-flag">
+                                                        <% } %>
+
+                                                            <% if (entry.club_name) { %>
+                                                                <span>
+                                                                    <%= entry.club_name %>
+                                                                </span>
+                                                                <% } %>
+
+                                                                    <% if (entry.competition_logo) { %>
+                                                                        <img src="<%= entry.competition_logo %>"
+                                                                            class="table-flag">
+                                                                        <% } %>
+
+                                                                            <% if (entry.competition_name) { %>
+                                                                                <span>
+                                                                                    <%= entry.competition_name %>
+                                                                                </span>
+                                                                                <% } %>
+
+                                                                                    <% if (entry.extra_info) { %>
+                                                                                        <span>- <%= entry.extra_info %>
+                                                                                                </span>
+                                                                                        <% } %>
+                                                </div>
+                                                <% }) %>
+                            </div>
+                        </div>
+                    </article>
+                    <% }) %>
+            </section>
+        </main>
+
+        <%- include('partials/footer') %>

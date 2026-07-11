@@ -1,0 +1,112 @@
+<%- include('partials/header', { title }) %>
+    <%- include('partials/navbar') %>
+
+        <main class="container">
+            <section class="page-header">
+                <h1>Anotações</h1>
+                <p>Rascunho temporário para acompanhar até 5 partidas antes de consolidar os dados.</p>
+            </section>
+
+            <section class="table-card">
+                <div class="section-title">
+                    <h2>Rascunho de Partidas</h2>
+
+                    <div class="notes-actions">
+                        <button type="button" class="btn-small" id="clearNotesBtn">Limpar tudo</button>
+                    </div>
+                </div>
+
+                <div class="notes-table-wrap">
+                    <table class="notes-table" id="notesTable">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>1º Partida</th>
+                                <th>2º Partida</th>
+                                <th>3º Partida</th>
+                                <th>4º Partida</th>
+                                <th>5º Partida</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <% const rows=[ 'Time' , 'Categoria' , 'Posição do Time' , '' , 'Placar' , 'Nota' , ''
+                                , 'Gols' , 'Gols Esperados' , 'Finalizações' , '% Finalizações Certas' , ''
+                                , 'Assistências' , 'Assistências Esperadas' , 'Passes' , '% Passes Certos'
+                                , 'Passes Importantes' , 'Pré-assistências' , '' , 'Dribles' , '% Dribles Certos'
+                                , 'Posse Ganha/Perdida' , '' , 'Divididas' , '% Divididas Vencidas' , 'Interceptações'
+                                , '% Disputas no Ataque' , '% Disputas na Defesa' ]; %>
+
+                                <% rows.forEach((row, rowIndex)=> { %>
+                                    <% if (row==='' ) { %>
+                                        <tr class="notes-separator">
+                                            <th></th>
+                                            <% for (let col=1; col <=5; col++) { %>
+                                                <td></td>
+                                                <% } %>
+                                        </tr>
+                                        <% } else { %>
+                                            <tr>
+                                                <th>
+                                                    <%= row %>
+                                                </th>
+
+                                                <% for (let col=1; col <=5; col++) { %>
+                                                    <td>
+                                                        <input type="text" data-row="<%= rowIndex %>"
+                                                            data-col="<%= col %>">
+                                                    </td>
+                                                    <% } %>
+                                            </tr>
+                                            <% } %>
+                                                <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <script>
+            const STORAGE_KEY = 'playerCareerHub_matchNotes';
+
+            const inputs = document.querySelectorAll('#notesTable input');
+            const clearButton = document.getElementById('clearNotesBtn');
+
+            function loadNotes() {
+                const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+
+                inputs.forEach(input => {
+                    const key = `${input.dataset.row}_${input.dataset.col}`;
+                    input.value = saved[key] || '';
+                });
+            }
+
+            function saveNotes() {
+                const data = {};
+
+                inputs.forEach(input => {
+                    const key = `${input.dataset.row}_${input.dataset.col}`;
+                    data[key] = input.value;
+                });
+
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            }
+
+            inputs.forEach(input => {
+                input.addEventListener('input', saveNotes);
+            });
+
+            clearButton.addEventListener('click', () => {
+                if (!confirm('Limpar todas as anotações?')) return;
+
+                localStorage.removeItem(STORAGE_KEY);
+
+                inputs.forEach(input => {
+                    input.value = '';
+                });
+            });
+
+            loadNotes();
+        </script>
+
+        <%- include('partials/footer') %>

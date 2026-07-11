@@ -1,0 +1,72 @@
+<%- include('partials/header', { title }) %>
+    <%- include('partials/navbar') %>
+
+        <main class="container">
+            <section class="page-header">
+                <h1>Editar Evolução</h1>
+                <p>Altere os atributos do jogador neste período.</p>
+            </section>
+
+            <section class="form-card">
+                <form action="/gerenciar/evolucao/editar/<%= attribute.id %>" method="POST" class="form-grid">
+                    <div class="form-group">
+                        <label>Data</label>
+                        <input type="date" name="date" value="<%= attribute.date %>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Idade</label>
+                        <input type="number" name="age" value="<%= attribute.age || '' %>" min="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Overall</label>
+                        <input type="number" name="overall" value="<%= attribute.overall %>" min="1" max="99" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ritmo</label>
+                        <input type="number" name="pace" value="<%= attribute.pace || '' %>" min="1" max="99">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Finalização</label>
+                        <input type="number" name="shooting" value="<%= attribute.shooting || '' %>" min="1" max="99">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Passes</label>
+                        <input type="number" name="passing" value="<%= attribute.passing || '' %>" min="1" max="99">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Condução</label>
+                        <input type="number" name="dribbling" value="<%= attribute.dribbling || '' %>" min="1" max="99">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Defesa</label>
+                        <input type="number" name="defending" value="<%= attribute.defending || '' %>" min="1" max="99">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Físico</label>
+                        <input type="number" name="physical" value="<%= attribute.physical || '' %>" min="1" max="99">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Valor de Mercado</label>
+                        <input type="number" name="market_value" value="<%= attribute.market_value || '' %>" min="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Salário</label>
+                        <input type="number" name="salary" value="<%= attribute.salary || '' %>" min="0">
+                    </div>
+
+                    <button type="submit" class="btn-primary">Salvar alterações</button>
+                </form>
+            </section>
+        </main>
+
+        <%- include('partials/footer') %>

@@ -1,0 +1,64 @@
+<%- include('partials/header', { title }) %>
+    <%- include('partials/navbar') %>
+
+        <main class="container">
+            <section class="page-header">
+                <h1>Histórico de Transferências</h1>
+                <p>Clubes, valores e contratos ao longo da carreira.</p>
+            </section>
+
+            <section class="table-card">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Temporada</th>
+                            <th>Data</th>
+                            <th>Origem</th>
+                            <th>Destino</th>
+                            <th>Valor Mercado</th>
+                            <th>Valor Pago</th>
+                            <th>Contrato até</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <% transfers.forEach(transfer=> { %>
+                            <tr>
+                                <td>
+                                    <%= transfer.season_name %>
+                                </td>
+                                <td>
+                                    <%= formatDate(transfer.date) %>
+                                </td>
+
+                                <td>
+                                    <% if (transfer.from_club_logo) { %>
+                                        <img src="<%= transfer.from_club_logo %>" class="table-flag">
+                                        <% } %>
+                                            <%= transfer.from_club_name || '-' %>
+                                </td>
+
+                                <td>
+                                    <% if (transfer.to_club_logo) { %>
+                                        <img src="<%= transfer.to_club_logo %>" class="table-flag">
+                                        <% } %>
+                                            <%= transfer.to_club_name %>
+                                </td>
+
+                                <td>
+                                    <%= formatMoney(transfer.market_value) %>
+                                </td>
+                                <td>
+                                    <%= formatMoney(transfer.transfer_fee) %>
+                                </td>
+                                <td>
+                                    <%= formatDate(transfer.contract_until) %>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+
+        <%- include('partials/footer') %>

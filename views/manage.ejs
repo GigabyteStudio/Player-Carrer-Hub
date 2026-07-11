@@ -1,0 +1,78 @@
+<%- include('partials/header', { title }) %>
+    <%- include('partials/navbar') %>
+
+        <main class="container">
+            <section class="page-header">
+                <h1>Gerenciar Dados</h1>
+                <p>Cadastre, edite ou exclua os dados da carreira.</p>
+            </section>
+
+            <section class="panel-section">
+                <h2>Cadastros</h2>
+
+                <div class="manage-grid">
+                    <a class="manage-card" href="/gerenciar/paises">
+                        <h2>Países</h2>
+                        <p>Cadastrar países e bandeiras.</p>
+                    </a>
+
+                    <a class="manage-card" href="/gerenciar/temporadas">
+                        <h2>Temporadas</h2>
+                        <p>Cadastrar temporadas da carreira.</p>
+                    </a>
+
+                    <a class="manage-card" href="/gerenciar/competicoes">
+                        <h2>Competições</h2>
+                        <p>Cadastrar ligas, copas e torneios.</p>
+                    </a>
+
+                    <a class="manage-card" href="/gerenciar/clubes">
+                        <h2>Clubes</h2>
+                        <p>Cadastrar escudo, nome e liga.</p>
+                    </a>
+                </div>
+            </section>
+
+            <section class="panel-section">
+                <h2>Carreira</h2>
+
+                <div class="manage-grid">
+                    <a class="manage-card" href="/gerenciar/campeonatos">
+                        <h2>Campeonatos</h2>
+                        <p>Temporada, time, competição e posição final.</p>
+                    </a>
+
+                    <a class="manage-card" href="/gerenciar/estatisticas">
+                        <h2>Estatísticas</h2>
+                        <p>Jogos, gols, assistências, cartões e nota média.</p>
+                    </a>
+
+                    <a class="manage-card" href="/jogador/gerenciar">
+                        <h2>Jogador</h2>
+                        <p>Editar foto, nome, posição e dados pessoais.</p>
+                    </a>
+
+                    <a class="manage-card" href="/gerenciar/evolucao">
+                        <h2>Evolução</h2>
+                        <p>Overall, ritmo, finalização, passes e outros atributos.</p>
+                    </a>
+
+                    <a class="manage-card" href="/gerenciar/transferencias">
+                        <h2>Transferências</h2>
+                        <p>Origem, destino, valor de mercado e quantia paga.</p>
+                    </a>
+
+                    <a class="manage-card" href="/gerenciar/lesoes">
+                        <h2>Lesões</h2>
+                        <p>Nome da lesão, período e jogos perdidos.</p>
+                    </a>
+
+                    <a class="manage-card" href="/gerenciar/trofeus">
+                        <h2>Troféus</h2>
+                        <p>Imagem, nome e quantidade.</p>
+                    </a>
+                </div>
+            </section>
+        </main>
+
+        <%- include('partials/footer') %>

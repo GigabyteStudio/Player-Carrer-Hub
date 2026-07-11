@@ -1,0 +1,110 @@
+<%- include('partials/header', { title }) %>
+    <%- include('partials/navbar') %>
+
+        <main class="container">
+            <section class="page-header">
+                <h1>Gerenciar Jogador</h1>
+                <p>Cadastre ou edite os dados principais do jogador.</p>
+            </section>
+
+            <section class="form-card">
+                <form action="/jogador/salvar" method="POST" enctype="multipart/form-data" class="form-grid">
+                    <div class="form-group">
+                        <label>Nome</label>
+                        <input type="text" name="name" value="<%= player?.name || '' %>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Número da camisa</label>
+                        <input type="text" name="shirt_number" value="<%= player?.shirt_number || '' %>"
+                            placeholder="91">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Patrocinador</label>
+                        <input type="text" name="sponsor" value="<%= player?.sponsor || '' %>"
+                            placeholder="Nike, Adidas...">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Idade</label>
+                        <input type="number" name="age" value="<%= player?.age || '' %>" min="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Altura</label>
+                        <input type="text" name="height" value="<%= player?.height || '' %>" placeholder="1,80 m">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Peso</label>
+                        <input type="text" name="weight" value="<%= player?.weight || '' %>" placeholder="75 kg">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nacionalidade</label>
+                        <select name="nationality_id">
+                            <option value="">Selecione</option>
+                            <% countries.forEach(country=> { %>
+                                <option value="<%= country.id %>" <%=player?.nationality_id===country.id ? 'selected'
+                                    : '' %>>
+                                    <%= country.name %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Posições</label>
+                        <input type="text" name="positions" value="<%= player?.positions || '' %>"
+                            placeholder="ATA, PD, PE">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Pé</label>
+                        <select name="preferred_foot">
+                            <option value="">Selecione</option>
+                            <option value="Direito" <%=player?.preferred_foot==='Direito' ? 'selected' : '' %>>Direito
+                            </option>
+                            <option value="Esquerdo" <%=player?.preferred_foot==='Esquerdo' ? 'selected' : '' %>
+                                >Esquerdo</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Fintas</label>
+                        <select name="skill_moves">
+                            <option value="">Selecione</option>
+                            <% for (let i=1; i <=5; i++) { %>
+                                <option value="<%= i %>" <%=player?.skill_moves===i ? 'selected' : '' %>><%= i %>
+                                        estrelas</option>
+                                <% } %>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Perna ruim</label>
+                        <select name="weak_foot">
+                            <option value="">Selecione</option>
+                            <% for (let i=1; i <=5; i++) { %>
+                                <option value="<%= i %>" <%=player?.weak_foot===i ? 'selected' : '' %>><%= i %> estrelas
+                                </option>
+                                <% } %>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Foto</label>
+                        <% if (player?.photo) { %>
+                            <img src="<%= player.photo %>" class="table-logo">
+                            <% } %>
+                                <input type="hidden" name="current_photo" value="<%= player?.photo || '' %>">
+                                <input type="file" name="photo" accept="image/*">
+                    </div>
+
+                    <button type="submit" class="btn-primary">Salvar jogador</button>
+                </form>
+            </section>
+        </main>
+
+        <%- include('partials/footer') %>

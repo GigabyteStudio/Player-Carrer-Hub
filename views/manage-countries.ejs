@@ -1,0 +1,71 @@
+<%- include('partials/header', { title }) %>
+    <%- include('partials/navbar') %>
+
+        <main class="container">
+            <section class="page-header">
+                <h1>Países</h1>
+                <p>Cadastre países e bandeiras usadas no sistema.</p>
+            </section>
+
+            <section class="form-card">
+                <h2>Adicionar País</h2>
+
+                <form action="/gerenciar/paises/adicionar" method="POST" enctype="multipart/form-data"
+                    class="form-grid">
+                    <div class="form-group">
+                        <label>Nome do País</label>
+                        <input type="text" name="name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Bandeira</label>
+                        <input type="file" name="flag" accept="image/*">
+                    </div>
+
+                    <button type="submit" class="btn-primary">Adicionar</button>
+                </form>
+            </section>
+
+            <section class="table-card">
+                <h2>Países cadastrados</h2>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Bandeira</th>
+                            <th>País</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <% countries.forEach(country=> { %>
+                            <tr>
+                                <td>
+                                    <% if (country.flag) { %>
+                                        <img src="<%= country.flag %>" class="table-flag">
+                                        <% } else { %>
+                                            -
+                                            <% } %>
+                                </td>
+
+                                <td>
+                                    <%= country.name %>
+                                </td>
+
+                                <td class="actions-cell">
+                                    <a class="btn-small" href="/gerenciar/paises/editar/<%= country.id %>">Editar</a>
+
+                                    <form action="/gerenciar/paises/excluir/<%= country.id %>" method="POST"
+                                        onsubmit="return confirm('Excluir este país?')">
+                                        <button type="submit" class="btn-danger">Excluir</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+
+        <%- include('partials/footer') %>

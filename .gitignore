@@ -1,0 +1,28 @@
+# Dependências
+node_modules/
+
+# Banco local
+*.db
+*.sqlite
+
+# -------------------------
+# Uploads
+# -------------------------
+
+# Ignora todos os arquivos dentro de uploads
+uploads/**
+
+# Mantém a estrutura das pastas
+!uploads/
+!uploads/clubs/
+!uploads/competitions/
+!uploads/countries/
+!uploads/players/
+!uploads/trophies/
+
+# Mantém um arquivo vazio em cada pasta
+!uploads/clubs/.gitkeep
+!uploads/competitions/.gitkeep
+!uploads/countries/.gitkeep
+!uploads/players/.gitkeep
+!uploads/trophies/.gitkeep

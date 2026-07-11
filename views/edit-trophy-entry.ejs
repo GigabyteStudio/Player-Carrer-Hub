@@ -1,0 +1,70 @@
+<%- include('partials/header', { title }) %>
+    <%- include('partials/navbar') %>
+
+        <main class="container">
+            <section class="page-header">
+                <h1>Editar Conquista</h1>
+                <p>Altere os detalhes da conquista.</p>
+            </section>
+
+            <section class="form-card">
+                <form action="/gerenciar/trofeus/editar-conquista/<%= entry.id %>" method="POST" class="form-grid">
+                    <div class="form-group">
+                        <label>Troféu</label>
+                        <select name="trophy_id" required>
+                            <% trophies.forEach(trophy=> { %>
+                                <option value="<%= trophy.id %>" <%=entry.trophy_id===trophy.id ? 'selected' : '' %>>
+                                    <%= trophy.name %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Temporada</label>
+                        <select name="season_id">
+                            <option value="">Nenhuma</option>
+                            <% seasons.forEach(season=> { %>
+                                <option value="<%= season.id %>" <%=entry.season_id===season.id ? 'selected' : '' %>>
+                                    <%= season.name %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Time/Seleção</label>
+                        <select name="club_id">
+                            <option value="">Nenhum</option>
+                            <% clubs.forEach(club=> { %>
+                                <option value="<%= club.id %>" <%=entry.club_id===club.id ? 'selected' : '' %>>
+                                    <%= club.name %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Competição</label>
+                        <select name="competition_id">
+                            <option value="">Nenhuma</option>
+                            <% competitions.forEach(competition=> { %>
+                                <option value="<%= competition.id %>" <%=entry.competition_id===competition.id
+                                    ? 'selected' : '' %>>
+                                    <%= competition.name %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Info extra</label>
+                        <input type="text" name="extra_info" value="<%= entry.extra_info || '' %>">
+                    </div>
+
+                    <button type="submit" class="btn-primary">Salvar alterações</button>
+                </form>
+            </section>
+        </main>
+
+        <%- include('partials/footer') %>
