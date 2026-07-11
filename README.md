@@ -33,10 +33,10 @@ Sistema desenvolvido para gerenciamento de carreiras de jogadores de futebol no 
 
 ## Instalação
 
-Clone o repositório:
+Baixe acima o repositório ou clone-o com o comando:
 
 ```bash
-git clone <url-do-repositorio>
+git clone https://github.com/GigabyteStudio/Player-Carrer-Hub
 ```
 
 Instale as dependências:
@@ -48,7 +48,7 @@ npm install
 Inicie o projeto:
 
 ```bash
-npm run dev
+npm start
 ```
 
 O sistema estará disponível em:
@@ -61,6 +61,7 @@ http://localhost:3000
 
 | Comando | Descrição |
 |---------|-----------|
-| `npm run dev` | Inicia o servidor em modo de desenvolvimento |
+| `npm start` | Inicia o servidor em modo de uso |
+| `npm run dev` | Inicia o servidor em modo de desenvolvimento (com nodemon) |
 | `npm run backup` | Cria um backup da database e da pasta de uploads |
 | `npm run reset` | Remove a database e todos os uploads |
