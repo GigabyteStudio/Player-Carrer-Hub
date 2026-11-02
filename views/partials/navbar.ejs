@@ -1,14 +1,35 @@
-<nav class="navbar">
-    <div class="navbar-brand">Player Career Hub</div>
-
-    <div class="navbar-links">
-        <a href="/jogador">Jogador</a>
-        <a href="/estatisticas">Estatísticas</a>
-        <a href="/evolucao">Evolução</a>
-        <a href="/transferencias">Transferências</a>
-        <a href="/trofeus">Troféus</a>
-        <a href="/lesoes">Lesões</a>
-        <a href="/anotacoes">Anotações</a>
-        <a href="/gerenciar">Gerenciar</a>
-    </div>
-</nav>
+<aside class="pch-sidebar" id="pchSidebar">
+  <a href="/jogador" class="pch-sidebar-brand">
+    <img src="/images/logo.png" alt="Player Career Hub" class="pch-sidebar-logo">
+  </a>
+  <div class="pch-side-label">SUA CARREIRA</div>
+  <nav class="pch-nav" aria-label="Navegação principal">
+    <a href="/jogador" class="<%= title === 'Jogador' ? 'is-active' : '' %>"><span class="pch-nav-symbol">◫</span> Visão geral</a>
+    <a href="/estatisticas" class="<%= title === 'Estatísticas' ? 'is-active' : '' %>"><span class="pch-nav-symbol">▥</span> Estatísticas</a>
+    <a href="/evolucao" class="<%= title === 'Evolução' ? 'is-active' : '' %>"><span class="pch-nav-symbol">↗</span> Evolução</a>
+    <a href="/transferencias" class="<%= title === 'Transferências' ? 'is-active' : '' %>"><span class="pch-nav-symbol">⇄</span> Transferências</a>
+    <a href="/trofeus" class="<%= title === 'Troféus' ? 'is-active' : '' %>"><span class="pch-nav-symbol">♜</span> Conquistas</a>
+    <a href="/lesoes" class="<%= title === 'Lesões' ? 'is-active' : '' %>"><span class="pch-nav-symbol">✚</span> Lesões</a>
+    <a href="/anotacoes" class="<%= title === 'Anotações' ? 'is-active' : '' %>"><span class="pch-nav-symbol">▤</span> Anotações</a>
+  </nav>
+  <div class="pch-side-bottom">
+    <a href="/gerenciar" class="<%= (title || '').toLowerCase().includes('gerenciar') ? 'is-active' : '' %>"><span class="pch-nav-symbol">⚙</span> Gerenciar</a>
+  </div>
+</aside>
+<header class="pch-topbar">
+  <button id="pchMenuButton" type="button" class="pch-menu-toggle" aria-label="Abrir ou fechar menu" aria-controls="pchSidebar" aria-expanded="false">☰</button>
+  <span class="pch-breadcrumb"><strong><%= title === 'Jogador' ? 'Visão geral' : (title || 'Página') %></strong></span>
+</header>
+<script>
+  (function() {
+    const btn = document.getElementById('pchMenuButton');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      const isOpen = document.body.classList.toggle('pch-menu-open');
+      btn.setAttribute('aria-expanded', String(isOpen));
+    });
+    document.querySelectorAll('#pchSidebar a').forEach(link => {
+      link.addEventListener('click', () => document.body.classList.remove('pch-menu-open'));
+    });
+  })();
+</script>

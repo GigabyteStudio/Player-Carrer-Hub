@@ -80,7 +80,7 @@ router.get('/', (req, res) => {
     SUM(cs.games) AS games,
     SUM(cs.goals) AS goals,
     SUM(cs.assists) AS assists,
-    AVG(cs.average_rating) AS average_rating
+    CASE WHEN SUM(CASE WHEN cs.average_rating IS NOT NULL THEN cs.games ELSE 0 END) > 0 THEN SUM(CASE WHEN cs.average_rating IS NOT NULL THEN cs.average_rating * cs.games ELSE 0 END) * 1.0 / SUM(CASE WHEN cs.average_rating IS NOT NULL THEN cs.games ELSE 0 END) ELSE NULL END AS average_rating
 
     FROM career_stats cs
     JOIN competition_campaigns cc ON cc.id = cs.campaign_id
@@ -88,42 +88,21 @@ router.get('/', (req, res) => {
 
     GROUP BY comp.id
     ORDER BY games DESC, goals DESC
-    LIMIT 5
     `).all();
 
-    const careerTotals = careerStats.reduce((acc, stat) => {
-        acc.games += stat.games || 0;
-        acc.goals += stat.goals || 0;
-        acc.assists += stat.assists || 0;
-
-        if (stat.average_rating) {
-            acc.rating_sum += Number(stat.average_rating);
-            acc.rating_count += 1;
-        }
-
-        return acc;
-    }, {
-        games: 0,
-        goals: 0,
-        assists: 0,
-        rating_sum: 0,
-        rating_count: 0
-    });
-
-    careerTotals.average_rating =
-        careerTotals.rating_count > 0
-            ? (careerTotals.rating_sum / careerTotals.rating_count).toFixed(2)
-            : '-';
-
-    careerTotals.goals_average =
-        careerTotals.games > 0
-            ? (careerTotals.goals / careerTotals.games).toFixed(2)
-            : '0.00';
-
-    careerTotals.assists_average =
-        careerTotals.games > 0
-            ? (careerTotals.assists / careerTotals.games).toFixed(2)
-            : '0.00';
+    const careerTotals = db.prepare(`
+      SELECT COALESCE(SUM(games),0) AS games,
+             COALESCE(SUM(goals),0) AS goals,
+             COALESCE(SUM(assists),0) AS assists,
+             CASE WHEN SUM(CASE WHEN average_rating IS NOT NULL THEN games ELSE 0 END) > 0
+               THEN SUM(CASE WHEN average_rating IS NOT NULL THEN average_rating * games ELSE 0 END) * 1.0 /
+                    SUM(CASE WHEN average_rating IS NOT NULL THEN games ELSE 0 END)
+               ELSE NULL END AS rating
+      FROM career_stats
+    `).get();
+    careerTotals.average_rating = careerTotals.rating == null ? '—' : Number(careerTotals.rating).toFixed(2).replace('.', ',');
+    careerTotals.goals_average = careerTotals.games ? (careerTotals.goals / careerTotals.games).toFixed(2).replace('.', ',') : '0,00';
+    careerTotals.assists_average = careerTotals.games ? (careerTotals.assists / careerTotals.games).toFixed(2).replace('.', ',') : '0,00';
 
     const overallHistory = db.prepare(`
     SELECT
@@ -212,6 +191,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/gerenciar', (req, res) => {
+    return res.redirect('/cadastro');
     const player = db.prepare('SELECT * FROM players LIMIT 1').get();
     const countries = db.prepare('SELECT * FROM countries ORDER BY name ASC').all();
 

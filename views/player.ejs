@@ -1,734 +1,158 @@
 <%- include('partials/header', { title }) %>
-    <%- include('partials/navbar') %>
-
-        <% function getRatingClass(value) { const rating=Number(value); if (!rating) return 'rating-empty' ; if (rating
-            < 80) return 'rating-yellow' ; if (rating < 88) return 'rating-green-light' ; if (rating < 96)
-            return 'rating-green-dark' ; if (rating < 99) return 'rating-gold' ; return 'rating-max' ; } %>
-
-            <main class="container">
-                <% if (!player) { %>
-                    <section class="empty-state">
-                        <h1>Nenhum jogador cadastrado</h1>
-                        <p>Cadastre os dados principais do jogador para começar.</p>
-                        <a class="btn-primary btn-link" href="/jogador/gerenciar">Cadastrar jogador</a>
-                    </section>
-                    <% } else { %>
-
-                        <section class="player-hero">
-                            <div class="player-photo-box">
-                                <% if (player.photo) { %>
-                                    <img src="<%= player.photo %>" class="player-photo">
-                                    <% } else { %>
-                                        <div class="player-photo-placeholder">Sem foto</div>
-                                        <% } %>
-                            </div>
-
-                            <div class="player-main-info">
-                                <span class="eyebrow">Perfil do Jogador</span>
-                                <h1>
-                                    <% if (player.shirt_number) { %>
-                                        <span class="shirt-number">#<%= player.shirt_number %></span>
-                                        <% } %>
-
-                                            <% if (player.nationality_flag) { %>
-                                                <img src="<%= player.nationality_flag %>" class="title-flag">
-                                                <% } %>
-
-                                                    <%= player.name %>
-                                </h1>
-
-                                <div class="player-tags">
-                                    <% if (player.preferred_foot) { %>
-                                        <span class="badge">Pé <%= player.preferred_foot %></span>
-                                        <% } %>
-
-                                            <% if (player.sponsor) { %>
-                                                <span class="badge">Patrocinador: <%= player.sponsor %></span>
-                                                <% } %>
-                                </div>
-
-                                <div class="overall-box">
-                                    <span>Overall</span>
-
-                                    <strong class="rating-box <%= getRatingClass(latestAttributes?.overall) %>">
-                                        <%= latestAttributes?.overall || '-' %>
-                                    </strong>
-                                </div>
-
-                                <div class="market-box">
-                                    <span>Valor de Mercado</span>
-
-                                    <strong>
-                                        <%= formatMoney(latestAttributes?.market_value) %>
-                                    </strong>
-                                </div>
-                            </div>
-
-                            <div class="current-club-card">
-                                <span class="eyebrow">Clube atual</span>
-
-                                <% if (currentTransfer?.club_logo) { %>
-                                    <img src="<%= currentTransfer.club_logo %>" class="club-large-logo">
-                                    <% } %>
-
-                                        <h2>
-                                            <%= currentTransfer?.club_name || 'Clube ainda não definido' %>
-                                        </h2>
-
-                                        <% if (currentTransfer?.league_name) { %>
-                                            <p>
-                                                <%= currentTransfer.league_name %>
-                                            </p>
-                                            <% } %>
-
-                                                <div class="club-meta">
-                                                    <div>
-                                                        <span>No time desde</span>
-                                                        <strong>
-                                                            <%= formatDate(currentTransfer?.date) %>
-                                                        </strong>
-                                                    </div>
-
-                                                    <div>
-                                                        <span>Contrato até</span>
-                                                        <strong>
-                                                            <%= formatDate(currentTransfer?.contract_until) %>
-                                                        </strong>
-                                                    </div>
-                                                </div>
-                            </div>
-                        </section>
-
-                        <section class="profile-grid">
-                            <div class="profile-card">
-                                <span class="card-label">Idade</span>
-                                <strong>
-                                    <%= player.age || '-' %>
-                                </strong>
-                            </div>
-
-                            <div class="profile-card">
-                                <span class="card-label">Altura</span>
-                                <strong>
-                                    <%= player.height || '-' %>
-                                </strong>
-                            </div>
-
-                            <div class="profile-card">
-                                <span class="card-label">Peso</span>
-                                <strong>
-                                    <%= player.weight || '-' %>
-                                </strong>
-                            </div>
-
-                            <div class="profile-card">
-                                <span class="card-label">Posições</span>
-                                <strong>
-                                    <%= player.positions || '-' %>
-                                </strong>
-                            </div>
-                        </section>
-
-                        <section class="content-card player-trophies-card">
-                            <div class="section-title">
-                                <h2>Troféus</h2>
-                                <a href="/trofeus" class="section-link">Ver todos</a>
-                            </div>
-
-                            <% if (trophies && trophies.length> 0) { %>
-                                <div class="trophies-carousel">
-                                    <% trophies.forEach(trophy=> { %>
-                                        <a href="/trofeus" class="player-trophy-item"
-                                            title="<%= trophy.quantity %>x <%= trophy.name %>">
-                                            <div class="player-trophy-image-box">
-                                                <% if (trophy.image) { %>
-                                                    <img src="<%= trophy.image %>" class="player-trophy-image">
-                                                    <% } else { %>
-                                                        <div class="player-trophy-placeholder">?</div>
-                                                        <% } %>
-
-                                                            <span class="player-trophy-quantity">
-                                                                <%= trophy.quantity %>
-                                                            </span>
-                                            </div>
-
-                                            <strong>
-                                                <%= trophy.name %>
-                                            </strong>
-                                        </a>
-                                        <% }) %>
-                                </div>
-                                <% } else { %>
-                                    <div class="placeholder-box">
-                                        Nenhum troféu cadastrado ainda.
-                                    </div>
-                                    <% } %>
-                        </section>
-
-                        <section class="content-card attributes-current-card">
-                            <div class="section-title">
-                                <h2>Atributos Atuais</h2>
-                                <a href="/evolucao" class="section-link">Ver tudo</a>
-                            </div>
-
-                            <% if (latestAttributes) { %>
-                                <div class="attributes-grid">
-                                    <div class="attribute-item">
-                                        <span>RIT</span>
-                                        <strong class="attribute-rating <%= getRatingClass(latestAttributes.pace) %>">
-                                            <%= latestAttributes.pace || '-' %>
-                                        </strong>
-                                    </div>
-
-                                    <div class="attribute-item">
-                                        <span>FIN</span>
-                                        <strong
-                                            class="attribute-rating <%= getRatingClass(latestAttributes.shooting) %>">
-                                            <%= latestAttributes.shooting || '-' %>
-                                        </strong>
-                                    </div>
-
-                                    <div class="attribute-item">
-                                        <span>PAS</span>
-                                        <strong
-                                            class="attribute-rating <%= getRatingClass(latestAttributes.passing) %>">
-                                            <%= latestAttributes.passing || '-' %>
-                                        </strong>
-                                    </div>
-
-                                    <div class="attribute-item">
-                                        <span>CON</span>
-                                        <strong
-                                            class="attribute-rating <%= getRatingClass(latestAttributes.dribbling) %>">
-                                            <%= latestAttributes.dribbling || '-' %>
-                                        </strong>
-                                    </div>
-
-                                    <div class="attribute-item">
-                                        <span>DEF</span>
-                                        <strong
-                                            class="attribute-rating <%= getRatingClass(latestAttributes.defending) %>">
-                                            <%= latestAttributes.defending || '-' %>
-                                        </strong>
-                                    </div>
-
-                                    <div class="attribute-item">
-                                        <span>FÍS</span>
-                                        <strong
-                                            class="attribute-rating <%= getRatingClass(latestAttributes.physical) %>">
-                                            <%= latestAttributes.physical || '-' %>
-                                        </strong>
-                                    </div>
-                                </div>
-                                <% } else { %>
-                                    <div class="placeholder-box">
-                                        Cadastre um registro em Evolução para exibir os atributos atuais.
-                                    </div>
-                                    <% } %>
-                        </section>
-
-                        <section class="section-grid">
-                            <div class="content-card skills-card">
-                                <div class="section-title">
-                                    <h2>Habilidades</h2>
-                                </div>
-
-                                <div class="skills-grid">
-                                    <div class="skill-row">
-                                        <span class="skill-label">Fintas</span>
-                                        <strong>
-                                            <% for (let i=1; i <=5; i++) { %>
-                                                <span
-                                                    class="<%= i <= (player.skill_moves || 0) ? 'star-filled' : 'star-empty' %>">★</span>
-                                                <% } %>
-                                        </strong>
-                                    </div>
-
-                                    <div class="skill-row">
-                                        <span class="skill-label">Perna Ruim</span>
-                                        <strong>
-                                            <% for (let i=1; i <=5; i++) { %>
-                                                <span
-                                                    class="<%= i <= (player.weak_foot || 0) ? 'star-filled' : 'star-empty' %>">★</span>
-                                                <% } %>
-                                        </strong>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="content-card">
-                                <div class="section-title">
-                                    <h2>Evolução do Overall</h2>
-                                </div>
-
-                                <div class="overall-chart-summary">
-                                    <div>
-                                        <span>Overall mínimo</span>
-                                        <strong>
-                                            <%= overallSummary.min || '-' %>
-                                        </strong>
-                                    </div>
-
-                                    <div>
-                                        <span>Overall máximo</span>
-                                        <strong>
-                                            <%= overallSummary.max || '-' %>
-                                        </strong>
-                                    </div>
-                                </div>
-
-                                <% if (overallHistory && overallHistory.length> 1) { %>
-                                    <div class="overall-chart-wrap">
-                                        <svg id="overallChart" viewBox="0 0 520 220"></svg>
-                                        <div id="overallTooltip" class="chart-tooltip"></div>
-                                    </div>
-
-                                    <script type="application/json" id="overallHistoryData">
-                                        <%- JSON.stringify(overallHistory) %>
-                                    </script>
-                                    <% } else { %>
-                                        <div class="placeholder-box">
-                                            Cadastre pelo menos dois registros de evolução para gerar o gráfico.
-                                        </div>
-                                        <% } %>
-                            </div>
-                        </section>
-
-                        <section class="section-grid">
-                            <div class="content-card">
-                                <div class="section-title">
-                                    <h2>Resumo da Carreira</h2>
-                                    <a href="/estatisticas" class="section-link">Ver tudo</a>
-                                </div>
-
-                                <% if (careerStats && careerStats.length> 0) { %>
-                                    <table class="mini-stats-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Competição</th>
-                                                <th>J</th>
-                                                <th>G</th>
-                                                <th>A</th>
-                                                <th>Nota</th>
-                                            </tr>
-                                        </thead>
-
-                                        <tbody>
-                                            <% careerStats.forEach(stat=> { %>
-                                                <tr>
-                                                    <td>
-                                                        <% if (stat.competition_logo) { %>
-                                                            <img src="<%= stat.competition_logo %>" class="table-flag">
-                                                            <% } %>
-                                                                <strong>
-                                                                    <%= stat.competition_name %>
-                                                                </strong>
-                                                    </td>
-
-                                                    <td>
-                                                        <%= stat.games || 0 %>
-                                                    </td>
-                                                    <td>
-                                                        <%= stat.goals || 0 %>
-                                                    </td>
-                                                    <td>
-                                                        <%= stat.assists || 0 %>
-                                                    </td>
-                                                    <td>
-                                                        <%= stat.average_rating ? Number(stat.average_rating).toFixed(2)
-                                                            : '-' %>
-                                                    </td>
-                                                </tr>
-                                                <% }) %>
-                                        </tbody>
-
-                                        <tfoot>
-                                            <tr>
-                                                <th>Total</th>
-                                                <th>
-                                                    <%= careerTotals.games %>
-                                                </th>
-                                                <th>
-                                                    <%= careerTotals.goals %>
-                                                </th>
-                                                <th>
-                                                    <%= careerTotals.assists %>
-                                                </th>
-                                                <th>
-                                                    <%= careerTotals.average_rating %>
-                                                </th>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
-
-                                    <div class="career-averages">
-                                        <span>
-                                            <%= careerTotals.goals_average %> gol/jogo
-                                        </span>
-                                        <span>
-                                            <%= careerTotals.assists_average %> assistência/jogo
-                                        </span>
-                                    </div>
-                                    <% } else { %>
-                                        <div class="placeholder-box">
-                                            Cadastre estatísticas para exibir o resumo da carreira.
-                                        </div>
-                                        <% } %>
-                            </div>
-
-                            <div class="content-card">
-                                <div class="section-title">
-                                    <h2>Valor de Mercado</h2>
-                                </div>
-
-                                <div class="market-chart-summary">
-                                    <div>
-                                        <span>Valor atual</span>
-                                        <strong>
-                                            <%= formatMoney(marketSummary.current) %>
-                                        </strong>
-                                    </div>
-
-                                    <div>
-                                        <span>Maior valor</span>
-                                        <strong>
-                                            <%= formatMoney(marketSummary.max) %>
-                                        </strong>
-                                    </div>
-                                </div>
-
-                                <% if (marketHistory && marketHistory.length> 1) { %>
-                                    <div class="market-chart-wrap">
-                                        <svg id="marketChart" viewBox="0 0 520 220"></svg>
-                                        <div id="marketTooltip" class="chart-tooltip"></div>
-                                    </div>
-
-                                    <script type="application/json" id="marketHistoryData">
-                                        <%- JSON.stringify(marketHistory) %>
-                                    </script>
-
-                                    <script type="application/json" id="marketTransfersData">
-                                        <%- JSON.stringify(marketTransfers) %>
-                                    </script>
-                                    <% } else { %>
-                                        <div class="placeholder-box">
-                                            Cadastre pelo menos dois registros de evolução com valor de mercado para
-                                            gerar o gráfico.
-                                        </div>
-                                        <% } %>
-                            </div>
-                        </section>
-
-                        <section class="content-card">
-                            <div class="section-title">
-                                <h2>Campeonatos</h2>
-                                <span>Histórico</span>
-                            </div>
-
-                            <% if (campaigns && campaigns.length> 0) { %>
-                                <div class="campaigns-table-wrap">
-                                    <table class="mini-campaigns-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Temporada</th>
-                                                <th>Competição</th>
-                                                <th>Time</th>
-                                                <th>Categoria</th>
-                                                <th>Posição</th>
-                                            </tr>
-                                        </thead>
-
-                                        <tbody>
-                                            <% campaigns.forEach(campaign=> { %>
-                                                <tr>
-                                                    <td>
-                                                        <%= campaign.season_name %>
-                                                    </td>
-
-                                                    <td>
-                                                        <% if (campaign.competition_logo) { %>
-                                                            <img src="<%= campaign.competition_logo %>"
-                                                                class="table-flag">
-                                                            <% } %>
-                                                                <strong>
-                                                                    <%= campaign.competition_name %>
-                                                                </strong>
-                                                    </td>
-
-                                                    <td>
-                                                        <% if (campaign.club_logo) { %>
-                                                            <img src="<%= campaign.club_logo %>" class="table-flag">
-                                                            <% } %>
-                                                                <%= campaign.club_name %>
-                                                    </td>
-
-                                                    <td>
-                                                        <span class="badge">
-                                                            <%= campaign.competition_category || '-' %>
-                                                        </span>
-                                                    </td>
-
-                                                    <td>
-                                                        <%= campaign.final_position || '-' %>
-                                                    </td>
-                                                </tr>
-                                                <% }) %>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <% } else { %>
-                                    <div class="placeholder-box">
-                                        Nenhum campeonato cadastrado ainda.
-                                    </div>
-                                    <% } %>
-                        </section>
-
-                        <% } %>
-            </main>
-
-            <script>
-                const overallHistoryElement = document.getElementById('overallHistoryData');
-
-                if (overallHistoryElement) {
-                    const data = JSON.parse(overallHistoryElement.textContent);
-
-                    if (data.length > 1) {
-                        const svg = document.getElementById('overallChart');
-                        const tooltip = document.getElementById('overallTooltip');
-
-                        const width = 520;
-                        const height = 220;
-                        const padding = 28;
-
-                        const values = data.map(item => Number(item.overall));
-                        const min = Math.min(...values);
-                        const max = Math.max(...values);
-
-                        const yMin = Math.max(0, min - 3);
-                        const yMax = Math.min(99, max + 3);
-
-                        function x(index) {
-                            return padding + (index / (data.length - 1)) * (width - padding * 2);
-                        }
-
-                        function y(value) {
-                            return height - padding - ((value - yMin) / (yMax - yMin)) * (height - padding * 2);
-                        }
-
-                        const points = data.map((item, index) => {
-                            return `${x(index)},${y(Number(item.overall))}`;
-                        }).join(' ');
-
-                        const polygonPoints = `
-                        ${padding},${height - padding}
-                        ${points}
-                        ${width - padding},${height - padding}
-                        `;
-
-                        svg.innerHTML = `
-                        <polygon 
-                        points="${polygonPoints}" 
-                        fill="rgba(11,31,58,.18)"
-                        ></polygon>
-
-                        <polyline 
-                        points="${points}" 
-                        fill="none" 
-                        stroke="#0b1f3a" 
-                        stroke-width="4" 
-                        stroke-linecap="round" 
-                        stroke-linejoin="round"
-                        ></polyline>
-
-                        ${data.map((item, index) => `
-                        <circle 
-                        cx="${x(index)}" 
-                        cy="${y(Number(item.overall))}" 
-                        r="6" 
-                        class="overall-chart-point"
-                        data-season="${item.season_name || '-'}"
-                        data-date="${item.date}"
-                        data-value="${item.overall}"
-                        ></circle>
-                        `).join('')}
-                        `;
-
-                        svg.querySelectorAll('.overall-chart-point').forEach(point => {
-                            point.addEventListener('mouseenter', () => {
-                                tooltip.innerHTML = `
-                    <strong>${point.dataset.value} OVR</strong><br>
-                    Temporada: ${point.dataset.season}<br>
-                    Data: ${point.dataset.date.split('-').reverse().join('/')}
-                    `;
-
-                                tooltip.style.display = 'block';
-                            });
-
-                            point.addEventListener('mousemove', event => {
-                                const rect = svg.getBoundingClientRect();
-                                tooltip.style.left = `${event.clientX - rect.left + 12}px`;
-                                tooltip.style.top = `${event.clientY - rect.top - 8}px`;
-                            });
-
-                            point.addEventListener('mouseleave', () => {
-                                tooltip.style.display = 'none';
-                            });
-                        });
-                    }
-                }
-            </script>
-
-            <script>
-                const marketHistoryElement = document.getElementById('marketHistoryData');
-                const marketTransfersElement = document.getElementById('marketTransfersData');
-
-                if (marketHistoryElement && marketTransfersElement) {
-                    const data = JSON.parse(marketHistoryElement.textContent);
-                    const transfers = JSON.parse(marketTransfersElement.textContent);
-
-                    if (data.length > 1) {
-                        const svg = document.getElementById('marketChart');
-                        const tooltip = document.getElementById('marketTooltip');
-
-                        const width = 520;
-                        const height = 220;
-                        const padding = 30;
-
-                        const values = data.map(item => Number(item.market_value));
-                        const min = Math.min(...values);
-                        const max = Math.max(...values);
-
-                        const yMin = Math.max(0, min - (max * 0.08));
-                        const yMax = max + (max * 0.12);
-
-                        function x(index) {
-                            return padding + (index / (data.length - 1)) * (width - padding * 2);
-                        }
-
-                        function y(value) {
-                            return height - padding - ((value - yMin) / (yMax - yMin)) * (height - padding * 2);
-                        }
-
-                        function formatMoneyShort(value) {
-                            const number = Number(value);
-
-                            if (number >= 1000000) {
-                                return `€ ${(number / 1000000).toLocaleString('pt-BR', {
-                                    minimumFractionDigits: 1,
-                                    maximumFractionDigits: 1
-                                })} mi`;
-                            }
-
-                            if (number >= 1000) {
-                                return `€ ${(number / 1000).toLocaleString('pt-BR', {
-                                    maximumFractionDigits: 0
-                                })} mil`;
-                            }
-
-                            return `€ ${number.toLocaleString('pt-BR')}`;
-                        }
-
-                        function formatDateBR(date) {
-                            return String(date).split('-').reverse().join('/');
-                        }
-
-                        const points = data.map((item, index) => {
-                            return `${x(index)},${y(Number(item.market_value))}`;
-                        }).join(' ');
-
-                        const polygonPoints = `
-        ${padding},${height - padding}
-        ${points}
-        ${width - padding},${height - padding}
-      `;
-
-                        const transferMarkers = transfers
-                            .map(transfer => {
-                                const index = data.findIndex(item => item.date === transfer.date);
-
-                                if (index === -1) return '';
-
-                                const item = data[index];
-                                const cx = x(index);
-                                const cy = y(Number(item.market_value));
-
-                                if (transfer.club_logo) {
-                                    return `
-                                <image 
-                                href="${transfer.club_logo}" 
-                                x="${cx - 13}" 
-                                y="${cy - 34}" 
-                                width="26" 
-                                height="26"
-                                class="market-transfer-logo"
-                                ></image>
-                                `;
-                                }
-
-                                return `
-                                <circle 
-                                cx="${cx}" 
-                                cy="${cy - 22}" 
-                                r="8" 
-                                fill="#0b1f3a"
-                                ></circle>
-                                `;
-                            })
-                            .join('');
-
-                        svg.innerHTML = `
-                        <polygon 
-                        points="${polygonPoints}" 
-                        fill="rgba(11,31,58,.18)"
-                        ></polygon>
-
-                        <polyline 
-                        points="${points}" 
-                        fill="none" 
-                        stroke="#0b1f3a" 
-                        stroke-width="4" 
-                        stroke-linecap="round" 
-                        stroke-linejoin="round"
-                        ></polyline>
-
-                        ${data.map((item, index) => `
-                        <circle 
-                        cx="${x(index)}" 
-                        cy="${y(Number(item.market_value))}" 
-                        r="5" 
-                        class="market-chart-point"
-                        data-season="${item.season_name || '-'}"
-                        data-date="${item.date}"
-                        data-value="${item.market_value}"
-                        ></circle>
-                        `).join('')}
-
-                        ${transferMarkers}
-                        `;
-
-                        svg.querySelectorAll('.market-chart-point').forEach(point => {
-                            point.addEventListener('mouseenter', () => {
-                                tooltip.innerHTML = `
-                        <strong>${formatMoneyShort(point.dataset.value)}</strong><br>
-                        Temporada: ${point.dataset.season}<br>
-                        Data: ${formatDateBR(point.dataset.date)}
-                        `;
-
-                                tooltip.style.display = 'block';
-                            });
-
-                            point.addEventListener('mousemove', event => {
-                                const rect = svg.getBoundingClientRect();
-                                tooltip.style.left = `${event.clientX - rect.left + 12}px`;
-                                tooltip.style.top = `${event.clientY - rect.top - 8}px`;
-                            });
-
-                            point.addEventListener('mouseleave', () => {
-                                tooltip.style.display = 'none';
-                            });
-                        });
-                    }
-                }
-            </script>
-
-            <%- include('partials/footer') %>
+<%- include('partials/navbar') %>
+<link rel="stylesheet" href="/css/home-complete-v2.css">
+<main class="container pch-dashboard">
+  <header class="pch-page-heading">
+    <div>
+      <div class="pch-overline">PAINEL DO JOGADOR</div>
+      <h1>Visão geral</h1>
+      <p>Resumo da carreira e desempenho em campo.</p>
+    </div>
+  </header>
+  <% if (!player) { %>
+  <section class="pch-empty">
+    <h2>Nenhum jogador cadastrado</h2><a class="pch-primary-action" href="/cadastro">Cadastrar jogador</a>
+  </section>
+  <% } else { %>
+  <section class="pch-player-hero">
+    <div class="pch-hero-copy">
+      <div class="pch-player-title-line"><% if (player.nationality_flag) { %><img class="pch-player-title-flag" src="<%= player.nationality_flag %>" alt=""><% } %><h2><%= player.name %></h2>
+      </div>
+      <div class="pch-player-subline"><span><%= player.nationality_name || 'Nacionalidade não definida' %></span><span class="pch-separator">·</span><span><%= player.age ?? '—' %> anos</span><% if(player.positions){ %><span class="pch-separator">·</span><span class="pch-position"><%= player.positions.split(',').map(p=>p.trim()).join(' - ') %></span><% } %></div>
+      <div class="pch-player-metadata">
+        <div class="pch-club-field"><small>CLUBE ATUAL</small><strong class="pch-club-name"><% if(currentTransfer?.club_logo){ %><img class="pch-club-logo" src="<%= currentTransfer.club_logo %>" alt=""><% } %><%= currentTransfer?.club_name || 'Não definido' %></strong></div>
+        <div><small>NO CLUBE DESDE</small><strong><%= currentTransfer?.date ? formatDate(currentTransfer.date) : '—' %></strong></div>
+        <div><small>CAMISA</small><strong><%= player.shirt_number ? '#'+player.shirt_number : '—' %></strong></div>
+        <div><small>PÉ PREFERIDO</small><strong><%= player.preferred_foot || '—' %></strong></div>
+        <div><small>VALOR DE MERCADO</small><strong><%= marketSummary.current != null ? formatMoney(marketSummary.current) : '—' %></strong></div>
+        <% if(player.sponsor){ %><div><small>PATROCINADOR</small><strong><%= player.sponsor %></strong></div><% } %>
+      </div>
+    </div>
+    <div class="pch-hero-photo-frame"><% if(player.photo){ %><% const x=Number(player.photo_position_x ?? 50),y=Number(player.photo_position_y ?? 50),z=Number(player.photo_zoom ?? 1); %><img class="pch-hero-photo" src="<%= player.photo %>" alt="Foto do jogador" data-x="<%= x %>" data-y="<%= y %>" data-zoom="<%= z %>"><% }else{ %><div class="pch-hero-no-photo">SEM FOTO</div><% } %></div>
+    <div class="pch-hero-overall"><strong><%= latestAttributes?.overall ?? '—' %></strong><span>OVERALL</span></div>
+    <a href="/cadastro" class="pch-hero-edit">Editar perfil ↗</a>
+  </section>
+  <section class="pch-profile-minis">
+    <div><small>ALTURA</small><strong><%= player.height ? (Number(player.height)/100).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+' m' : '—' %></strong></div>
+    <div><small>PESO</small><strong><%= player.weight ? player.weight+' kg' : '—' %></strong></div>
+    <div><small>FINTAS</small><span class="pch-stars" aria-label="<%= player.skill_moves ?? 0 %> de 5 estrelas"><% for(let i=1;i<=5;i++){ %><span class="<%= i<=Number(player.skill_moves || 0) ? 'on' : '' %>">★</span><% } %></span></div>
+    <div><small>PERNA RUIM</small><span class="pch-stars" aria-label="<%= player.weak_foot ?? 0 %> de 5 estrelas"><% for(let i=1;i<=5;i++){ %><span class="<%= i<=Number(player.weak_foot || 0) ? 'on' : '' %>">★</span><% } %></span></div>
+  </section>
+  <div class="pch-section-divider"><span>RESUMO DA CARREIRA</span></div>
+  <section class="pch-stat-grid">
+    <div class="pch-stat-card"><span>Partidas</span><strong><%= careerTotals.games || 0 %></strong><small>registradas na carreira</small></div>
+    <div class="pch-stat-card"><span>Gols</span><strong><%= careerTotals.goals || 0 %></strong><small><em><%= careerTotals.goals_average %></em> por partida</small></div>
+    <div class="pch-stat-card"><span>Assistências</span><strong><%= careerTotals.assists || 0 %></strong><small><em><%= careerTotals.assists_average %></em> por partida</small></div>
+    <div class="pch-stat-card"><span>Nota média</span><strong><%= careerTotals.average_rating %></strong><small>média ponderada por partidas</small></div>
+  </section>
+  <div class="pch-dashboard-grid">
+    <section class="pch-panel">
+      <div class="pch-panel-title">
+        <div>
+          <h3>Dentro de campo</h3>
+          <p>Desempenho por competição</p>
+        </div><a href="/estatisticas">Ver estatísticas ↗</a>
+      </div>
+      <% if(careerStats.length){ %><div class="pch-table-scroll">
+        <table class="pch-stat-table">
+          <thead>
+            <tr>
+              <th>COMPETIÇÃO</th>
+              <th>J</th>
+              <th>G</th>
+              <th>A</th>
+              <th>NOTA</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% careerStats.forEach(c=>{ %><tr>
+              <td><span class="pch-comp-name"><% if(c.competition_logo){ %><img src="<%= c.competition_logo %>" alt=""><% } %><%= c.competition_name %></span></td>
+              <td><%= c.games %></td>
+              <td><%= c.goals %></td>
+              <td><%= c.assists %></td>
+              <td><%= c.average_rating == null ? '—' : Number(c.average_rating).toFixed(2).replace('.',',') %></td>
+            </tr><% }) %>
+            <tr class="pch-total-row">
+              <td>Total</td>
+              <td><%= careerTotals.games %></td>
+              <td><%= careerTotals.goals %></td>
+              <td><%= careerTotals.assists %></td>
+              <td><%= careerTotals.average_rating %></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="pch-table-foot"><%= careerTotals.goals_average %> gol/jogo · <%= careerTotals.assists_average %> assistência/jogo</p><% }else{ %><div class="pch-panel-empty">Nenhuma estatística registrada.</div><% } %>
+    </section>
+    <section class="pch-panel">
+      <div class="pch-panel-title">
+        <div>
+          <h3>Evolução do overall</h3>
+          <p>Histórico de atributos</p>
+        </div><a href="/evolucao">Ver evolução ↗</a>
+      </div>
+      <div class="pch-graph-summary"><span>Mínimo <strong><%= overallSummary.min ?? '—' %></strong></span><span>Máximo <strong><%= overallSummary.max ?? '—' %></strong></span></div>
+      <div class="pch-interactive-chart" id="pchOverallGraph" data-points="<%= JSON.stringify(overallHistory.map(h=>({date:h.date,season:h.season_name,value:Number(h.overall)}))) %>" data-kind="overall"></div>
+    </section>
+  </div>
+  <div class="pch-secondary-grid">
+    <section class="pch-panel">
+      <div class="pch-panel-title">
+        <div>
+          <h3>Atributos atuais</h3>
+          <p>Último registro</p>
+        </div><a href="/evolucao">Ver evolução ↗</a>
+      </div><% if(latestAttributes){ %><div class="pch-attributes"><% (player.positions?.split(',').map(p=>p.trim()).includes('GOL') ? [['MER','gk_diving'],['MAN','gk_handling'],['CHU','gk_kicking'],['REF','gk_reflexes'],['VEL','gk_speed'],['POS','gk_positioning']] : [['RIT','pace'],['FIN','shooting'],['PAS','passing'],['CON','dribbling'],['DEF','defending'],['FÍS','physical']]).forEach(([label,key])=>{ %><div><span><%= label %></span><strong><%= latestAttributes[key] ?? '—' %></strong></div><% }) %></div><% }else{ %><div class="pch-panel-empty">Nenhum atributo registrado.</div><% } %>
+    </section>
+    <section class="pch-panel">
+      <div class="pch-panel-title">
+        <div>
+          <h3>Conquistas</h3>
+          <p>Troféus acumulados</p>
+        </div><a href="/trofeus">Ver todos ↗</a>
+      </div><% if(trophies.length){ %><div class="pch-trophy-list"><% trophies.slice(0,5).forEach(t=>{ %><div><% if(t.image){ %><img src="<%= t.image %>" alt=""><% } %><span><%= t.name %></span><strong>×<%= t.quantity %></strong></div><% }) %></div><% }else{ %><div class="pch-panel-empty">Nenhuma conquista registrada.</div><% } %>
+    </section>
+  </div>
+  <div class="pch-secondary-grid pch-final-panels">
+    <section class="pch-panel">
+      <div class="pch-panel-title">
+        <div>
+          <h3>Valor de mercado</h3>
+          <p>Histórico em euros</p>
+        </div><a href="/evolucao">Ver evolução ↗</a>
+      </div>
+      <div class="pch-graph-summary"><span>Valor atual <strong><%= formatMoney(marketSummary.current) %></strong></span><span>Maior valor <strong><%= formatMoney(marketSummary.max) %></strong></span></div>
+      <div class="pch-interactive-chart" id="pchMarketGraph" data-points="<%= JSON.stringify(marketHistory.map(h=>({date:h.date,season:h.season_name,value:Number(h.market_value)}))) %>" data-kind="market"></div>
+    </section>
+    <section class="pch-panel">
+      <div class="pch-panel-title">
+        <div>
+          <h3>Campeonatos</h3>
+          <p>Histórico de participações</p>
+        </div><a href="/estatisticas">Ver estatísticas ↗</a>
+      </div><% if(campaigns.length){ %><div class="pch-campaign-scroll">
+        <table class="pch-stat-table">
+          <thead>
+            <tr>
+              <th>TEMPORADA</th>
+              <th>COMPETIÇÃO</th>
+              <th>TIME</th>
+              <th>CATEGORIA</th>
+              <th>POSIÇÃO</th>
+            </tr>
+          </thead>
+          <tbody><% campaigns.forEach(c=>{ %><tr>
+              <td><%= c.season_name %></td>
+              <td><span class="pch-comp-name"><% if(c.competition_logo){ %><img src="<%= c.competition_logo %>" alt=""><% } %><%= c.competition_name %></span></td>
+              <td><span class="pch-comp-name"><% if(c.club_logo){ %><img src="<%= c.club_logo %>" alt=""><% } %><%= c.club_name %></span></td>
+              <td><%= c.competition_category || '—' %></td>
+              <td><%= c.final_position || '—' %></td>
+            </tr><% }) %></tbody>
+        </table>
+      </div><% }else{ %><div class="pch-panel-empty">Nenhuma campanha cadastrada.</div><% } %>
+    </section>
+  </div>
+  <% } %>
+</main>
+<script src="/js/home-graphs-v2.js" defer></script>
+<%- include('partials/footer') %>

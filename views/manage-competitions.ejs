@@ -1,112 +1,19 @@
-<%- include('partials/header', { title }) %>
-    <%- include('partials/navbar') %>
-
-        <main class="container">
-            <section class="page-header">
-                <h1>Competições</h1>
-                <p>Cadastre ligas, copas e torneios da carreira.</p>
-            </section>
-
-            <section class="form-card">
-                <h2>Adicionar Competição</h2>
-
-                <form action="/gerenciar/competicoes/adicionar" method="POST" enctype="multipart/form-data"
-                    class="form-grid">
-                    <div class="form-group">
-                        <label>Nome</label>
-                        <input type="text" name="name" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Categoria</label>
-                        <select name="category" required>
-                            <option value="">Selecione</option>
-                            <option value="Liga">Liga</option>
-                            <option value="Copa">Copa</option>
-                            <option value="Copa da Liga">Copa da Liga</option>
-                            <option value="Continental">Continental</option>
-                            <option value="Amistoso">Amistoso</option>
-                            <option value="Seleção">Seleção</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>País/Região</label>
-                        <select name="country_id">
-                            <option value="">Selecione</option>
-                            <% countries.forEach(country=> { %>
-                                <option value="<%= country.id %>">
-                                    <%= country.name %>
-                                </option>
-                                <% }) %>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Logo</label>
-                        <input type="file" name="logo" accept="image/*">
-                    </div>
-
-                    <button type="submit" class="btn-primary">Adicionar</button>
-                </form>
-            </section>
-
-            <section class="table-card">
-                <h2>Competições cadastradas</h2>
-
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Logo</th>
-                            <th>Nome</th>
-                            <th>Categoria</th>
-                            <th>País/Região</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        <% competitions.forEach(competition=> { %>
-                            <tr>
-                                <td>
-                                    <% if (competition.logo) { %>
-                                        <img src="<%= competition.logo %>" class="table-logo">
-                                        <% } else { %>
-                                            -
-                                            <% } %>
-                                </td>
-
-                                <td>
-                                    <%= competition.name %>
-                                </td>
-
-                                <td>
-                                    <span class="badge">
-                                        <%= competition.category || '-' %>
-                                    </span>
-                                </td>
-
-                                <td>
-                                    <% if (competition.country_flag) { %>
-                                        <img src="<%= competition.country_flag %>" class="table-flag">
-                                        <% } %>
-                                            <%= competition.country_name || '-' %>
-                                </td>
-
-                                <td class="actions-cell">
-                                    <a class="btn-small"
-                                        href="/gerenciar/competicoes/editar/<%= competition.id %>">Editar</a>
-
-                                    <form action="/gerenciar/competicoes/excluir/<%= competition.id %>" method="POST"
-                                        onsubmit="return confirm('Excluir esta competição?')">
-                                        <button type="submit" class="btn-danger">Excluir</button>
-                                    </form>
-                                </td>
-                            </tr>
-                            <% }) %>
-                    </tbody>
-                </table>
-            </section>
-        </main>
-
-        <%- include('partials/footer') %>
+<%- include('partials/header', {title}) %>
+<%- include('partials/navbar') %>
+<link rel="stylesheet" href="/css/manage-v2.css">
+<main class="container pch-manage">
+ <div class="pch-mhead"><a class="pch-back" href="/gerenciar">← Gerenciar</a><div class="pch-eyebrow">CADASTROS</div><h1>Competições</h1><p>Cadastre as competições; a associação a um país é opcional.</p></div>
+ <% if(error){ %><div class="pch-merror"><%= error %></div><% } %>
+ <section class="pch-mpanel"><div class="pch-mpanel-head"><h2>Nova competição</h2><span>Logo opcional, até 5 MB</span></div>
+  <form class="pch-mform" action="/gerenciar/competicoes/adicionar" method="post" enctype="multipart/form-data"><label>Nome<input name="name" maxlength="100" placeholder="Ex.: Eredivisie" required></label><label>Categoria<select name="category" required><option value="">Selecione</option><% categories.forEach(c=>{ %><option value="<%= c %>"><%= c %></option><% }) %></select></label><label>País (opcional)<select name="country_id"><option value="">Sem país</option><% countries.forEach(c=>{ %><option value="<%= c.id %>"><%= c.name %></option><% }) %></select></label><label>Logotipo<input name="logo" type="file" accept="image/png,image/jpeg,image/webp"></label><button class="pch-mbtn" type="submit">Cadastrar competição</button></form>
+ </section>
+ <section class="pch-mpanel"><div class="pch-mpanel-head"><h2>Competições cadastradas</h2><span><%= competitions.length %> registros</span></div>
+ <% if(!competitions.length){ %><div class="pch-mempty">Nenhuma competição cadastrada.</div><% } else { %><div class="pch-mtable-wrap"><table class="pch-mtable"><thead><tr><th>Competição</th><th>Categoria</th><th>País</th><th>Ações</th></tr></thead><tbody><% competitions.forEach(c=>{ %><tr><td><div class="pch-mentity"><% if(c.logo){ %><img src="<%= c.logo %>" alt="" class="pch-crest"><% } %><strong><%= c.name %></strong></div></td><td><%= c.category %></td><td><div class="pch-mentity"><% if(c.country_flag){ %><img src="<%= c.country_flag %>" alt="" class="pch-flag"><% } %><%= c.country_name || '—' %></div></td><td><div class="pch-inline-actions"><button type="button" class="pch-msecondary" data-edit-competition="<%= c.id %>">Editar</button><form action="/gerenciar/competicoes/excluir/<%= c.id %>" method="post" onsubmit="return confirm('Excluir esta competição?')"><button class="pch-linkdanger" type="submit">Excluir</button></form></div></td></tr><% }) %></tbody></table></div><% } %>
+ </section>
+ <section class="pch-mpanel" id="competitionEditPanel" hidden><div class="pch-mpanel-head"><h2>Editar competição</h2></div><form id="competitionEditForm" class="pch-mform" method="post" enctype="multipart/form-data"><label>Nome<input id="competitionName" name="name" maxlength="100" required></label><label>Categoria<select id="competitionCategory" name="category" required><% categories.forEach(c=>{ %><option value="<%= c %>"><%= c %></option><% }) %></select></label><label>País (opcional)<select id="competitionCountry" name="country_id"><option value="">Sem país</option><% countries.forEach(c=>{ %><option value="<%= c.id %>"><%= c.name %></option><% }) %></select></label><label>Nova logo (opcional)<input name="logo" type="file" accept="image/png,image/jpeg,image/webp"></label><button class="pch-mbtn" type="submit">Salvar alterações</button><button class="pch-msecondary" type="button" id="cancelCompetition">Cancelar</button></form></section>
+</main>
+<script type="application/json" id="competitionData"><%- JSON.stringify(competitions.map(c=>({id:c.id,name:c.name,category:c.category,country_id:c.country_id}))).replace(/</g,'\\u003c') %></script>
+<script>
+(() => {const items=JSON.parse(document.getElementById('competitionData').textContent);const panel=document.getElementById('competitionEditPanel');document.querySelectorAll('[data-edit-competition]').forEach(btn=>btn.addEventListener('click',()=>{const c=items.find(x=>String(x.id)===btn.dataset.editCompetition);if(!c)return;document.getElementById('competitionEditForm').action='/gerenciar/competicoes/editar/'+c.id;document.getElementById('competitionName').value=c.name;document.getElementById('competitionCategory').value=c.category;document.getElementById('competitionCountry').value=c.country_id == null ? '' : String(c.country_id);panel.hidden=false;panel.scrollIntoView({behavior:'smooth',block:'center'});}));document.getElementById('cancelCompetition').addEventListener('click',()=>panel.hidden=true);})();
+</script>
+<%- include('partials/footer') %>

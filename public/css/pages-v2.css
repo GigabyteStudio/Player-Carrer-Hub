@@ -1,0 +1,526 @@
+/* Player Career Hub — páginas internas (V2). A folha original continua preservada. */
+.pch-inner-page {
+    display: flex;
+    flex-direction: column;
+    gap: 0
+}
+
+.pch-inner-page .pch-page-heading {
+    margin-bottom: 24px
+}
+
+.pch-inner-page .pch-page-heading h1 {
+    font-size: 36px
+}
+
+.pch-inner-page .pch-panel {
+    padding: 23px
+}
+
+.pch-inner-page .pch-panel-title h3 {
+    font-size: 23px
+}
+
+.pch-inner-page .pch-panel-title p {
+    font-size: 12px
+}
+
+.pch-inner-page .pch-stat-card {
+    min-height: 140px
+}
+
+.pch-below {
+    margin-top: 18px
+}
+
+.pch-three-col {
+    grid-template-columns: repeat(3, minmax(0, 1fr))
+}
+
+.pch-count {
+    white-space: nowrap;
+    color: var(--pch-muted);
+    font-size: 11px;
+    border: 1px solid var(--pch-border);
+    border-radius: 5px;
+    padding: 7px 10px
+}
+
+.pch-list-empty {
+    padding: 72px 24px;
+    text-align: center;
+    color: #9eae98;
+    font-size: 13px;
+    background: radial-gradient(ellipse at top, #202d1b 0%, transparent 65%);
+    border: 1px dashed #34422e;
+    border-radius: 6px
+}
+
+.pch-full-empty {
+    grid-column: 1/-1
+}
+
+.pch-stat-table.pch-detail-table {
+    min-width: 730px
+}
+
+.pch-detail-table td,
+.pch-detail-table th {
+    white-space: nowrap
+}
+
+.pch-detail-table thead th {
+    font-size: 10px;
+    text-transform: uppercase;
+    text-align: left
+}
+
+.pch-detail-table td {
+    text-align: left !important;
+    font-size: 12px
+}
+
+.pch-detail-table th:not(:first-child) {
+    text-align: left
+}
+
+.pch-detail-table tbody tr:hover {
+    background: #222c1e
+}
+
+.pch-detail-table tfoot {
+    background: #242e20;
+    color: var(--pch-lime);
+    font-weight: 700
+}
+
+.pch-detail-table tfoot td {
+    border-bottom: 0
+}
+
+.pch-team {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px
+}
+
+.pch-team img,
+.pch-trophy-meta img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    flex-shrink: 0
+}
+
+.pch-accent {
+    color: var(--pch-lime) !important;
+    font-weight: 700
+}
+
+.pch-filters {
+    display: flex;
+    align-items: end;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: -3px 0 23px
+}
+
+.pch-filters label {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    color: #9cac97;
+    font-size: 11px;
+    min-width: 145px;
+    flex: 1
+}
+
+.pch-filters select {
+    background: #111810;
+    color: #eef1e9;
+    border: 1px solid #3a4934;
+    border-radius: 5px;
+    padding: 10px 12px;
+    min-height: 39px;
+    width: 100%;
+    font-family: inherit;
+    font-size: 12px
+}
+
+.pch-filters .pch-primary-action {
+    min-height: 39px
+}
+
+.pch-clear-filter {
+    font-size: 12px;
+    padding: 12px 8px
+}
+
+.pch-trophy-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px
+}
+
+.pch-trophy-top {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--pch-border)
+}
+
+.pch-trophy-art {
+    background: #11170f;
+    border: 1px solid #34422e;
+    border-radius: 6px;
+    width: 96px;
+    height: 108px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0
+}
+
+.pch-trophy-art img {
+    width: 85%;
+    height: 88%;
+    object-fit: contain
+}
+
+.pch-trophy-art span {
+    color: var(--pch-lime);
+    font-size: 34px
+}
+
+.pch-trophy-top h3 {
+    font-size: 28px;
+    margin: 6px 0
+}
+
+.pch-trophy-quantity {
+    font-size: 12px;
+    color: #a9b8a3
+}
+
+.pch-trophy-quantity strong {
+    color: var(--pch-lime);
+    font-size: 20px
+}
+
+.pch-trophy-entries {
+    max-height: 330px;
+    overflow-y: auto;
+    margin-top: 12px
+}
+
+.pch-trophy-entry {
+    padding: 13px 0;
+    border-bottom: 1px solid #2a3427;
+    display: flex;
+    flex-direction: column;
+    gap: 8px
+}
+
+.pch-trophy-entry:last-child {
+    border-bottom: 0
+}
+
+.pch-trophy-entry>strong {
+    font-size: 13px
+}
+
+.pch-trophy-entry small,
+.pch-muted {
+    color: #99aa94
+}
+
+.pch-trophy-meta {
+    display: flex;
+    gap: 9px;
+    align-items: center;
+    flex-wrap: wrap;
+    color: #bbcbb4;
+    font-size: 11px
+}
+
+.pch-current-overall {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+    margin-bottom: 22px
+}
+
+.pch-current-overall span {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #a4b69b
+}
+
+.pch-current-overall strong {
+    font: 700 75px/1 'Barlow Condensed', sans-serif;
+    color: var(--pch-lime)
+}
+
+.pch-current-overall small {
+    color: #91a289
+}
+
+.pch-attribute-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 12px
+}
+
+.pch-attribute-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    padding: 20px 8px;
+    background: #141b12;
+    border: 1px solid #32402c;
+    border-radius: 5px
+}
+
+.pch-attribute-tile span {
+    font-size: 12px;
+    text-align: center;
+    color: #aabca3
+}
+
+.pch-attribute-tile strong {
+    font: 700 38px/1 'Barlow Condensed', sans-serif;
+    color: #eff9dc
+}
+
+.pch-attribute-tile small {
+    color: #8fa483
+}
+
+.pch-history-scroll {
+    overflow-x: auto
+}
+
+.pch-history {
+    display: flex;
+    align-items: stretch;
+    gap: 14px;
+    padding: 4px 0 10px
+}
+
+.pch-history-item {
+    flex: 0 0 235px;
+    background: #141a13;
+    border: 1px solid #33402e;
+    border-radius: 6px;
+    padding: 17px
+}
+
+.pch-history-head {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+    padding-bottom: 13px;
+    border-bottom: 1px solid #303b2b
+}
+
+.pch-history-head strong {
+    color: var(--pch-lime);
+    font-size: 14px
+}
+
+.pch-history-head small {
+    color: #93a38d
+}
+
+.pch-history-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 0;
+    border-bottom: 1px solid #263123;
+    gap: 9px;
+    font-size: 12px
+}
+
+.pch-history-row:last-child {
+    border: 0
+}
+
+.pch-history-row span {
+    color: #a9bba2
+}
+
+.pch-history-row>div {
+    display: flex;
+    align-items: center;
+    gap: 8px
+}
+
+.pch-history-row strong {
+    font-size: 14px
+}
+
+.pch-history-row small {
+    font-size: 10px
+}
+
+.pch-positive {
+    color: var(--pch-lime)
+}
+
+.pch-negative {
+    color: #ed9c95
+}
+
+.pch-neutral {
+    color: #778b73
+}
+
+.pch-note-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap
+}
+
+.pch-save-status {
+    font-size: 11px;
+    color: #9fb398
+}
+
+.pch-secondary-button,
+.pch-danger-button {
+    font: 600 11px 'DM Sans', sans-serif;
+    padding: 10px 13px;
+    border-radius: 5px;
+    cursor: pointer
+}
+
+.pch-secondary-button {
+    background: #26331f;
+    color: var(--pch-lime);
+    border: 1px solid #405338
+}
+
+.pch-danger-button {
+    background: #30201d;
+    color: #f4b4a9;
+    border: 1px solid #66403b
+}
+
+.pch-notes-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    min-width: 900px
+}
+
+.pch-notes-table thead th {
+    position: sticky;
+    top: 0;
+    background: #293922;
+    color: #d8f3be;
+    font-size: 11px;
+    padding: 13px 10px;
+    text-align: center;
+    border-bottom: 1px solid #41513b
+}
+
+.pch-notes-table thead th:first-child {
+    text-align: left;
+    width: 235px
+}
+
+.pch-notes-table tbody th {
+    background: #1e281b;
+    color: #c0d0b9;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 10px 13px;
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: 1px solid #34402e
+}
+
+.pch-notes-table tbody td {
+    padding: 0;
+    background: #171e15;
+    border-bottom: 1px solid #293627;
+    border-left: 1px solid #293627
+}
+
+.pch-notes-table input {
+    width: 100%;
+    min-width: 105px;
+    height: 39px;
+    outline: 0;
+    border: 0;
+    border-radius: 0;
+    box-sizing: border-box;
+    background: transparent;
+    color: #ecf7df;
+    text-align: center;
+    font-size: 12px;
+    font-family: inherit
+}
+
+.pch-notes-table input:focus {
+    background: #2b3925;
+    box-shadow: inset 0 0 0 1px var(--pch-lime)
+}
+
+.pch-notes-gap td {
+    height: 12px;
+    background: #10140f !important;
+    border: 0 !important
+}
+
+.pch-notes-help {
+    color: #899e83;
+    font-size: 11px;
+    margin: 16px 0 0
+}
+
+.pch-inner-page .pch-table-scroll {
+    width: 100%;
+    max-width: 100%
+}
+
+@media(max-width:1150px) {
+    .pch-trophy-grid {
+        grid-template-columns: 1fr
+    }
+
+    .pch-attribute-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr))
+    }
+}
+
+@media(max-width:700px) {
+    .pch-three-col {
+        grid-template-columns: 1fr
+    }
+
+    .pch-filters label {
+        flex-basis: 45%
+    }
+
+    .pch-inner-page .pch-panel {
+        padding: 16px
+    }
+
+    .pch-inner-page .pch-page-heading h1 {
+        font-size: 32px
+    }
+
+    .pch-attribute-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+    }
+
+    .pch-note-actions {
+        justify-content: flex-start
+    }
+}

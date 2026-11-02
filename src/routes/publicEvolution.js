@@ -15,6 +15,17 @@ const attributeList = [
 ];
 
 router.get('/', (req, res) => {
+    const player = db.prepare('SELECT positions FROM players LIMIT 1').get();
+    const isGoalkeeper = player?.positions?.split(',').map(p => p.trim()).includes('GOL');
+    const visibleAttributes = isGoalkeeper ? [
+      {key:'overall',label:'Overall',short:'GER'},
+      {key:'gk_diving',label:'Mergulho',short:'MER'},
+      {key:'gk_handling',label:'Manejo',short:'MAN'},
+      {key:'gk_kicking',label:'Chute',short:'CHU'},
+      {key:'gk_reflexes',label:'Reflexos',short:'REF'},
+      {key:'gk_speed',label:'Velocidade',short:'VEL'},
+      {key:'gk_positioning',label:'Posicionamento',short:'POS'}
+    ] : attributeList;
     const history = db.prepare(`
     SELECT
       ap.*,
@@ -29,7 +40,7 @@ router.get('/', (req, res) => {
     const latestAttributes = history.length ? history[history.length - 1] : null;
     const firstAttributes = history.length ? history[0] : null;
 
-    const changes = attributeList.map(attribute => {
+    const changes = visibleAttributes.map(attribute => {
         return {
             ...attribute,
             first: firstAttributes ? firstAttributes[attribute.key] : null,
@@ -42,7 +53,7 @@ router.get('/', (req, res) => {
         history,
         latestAttributes,
         changes,
-        attributeList,
+        attributeList: visibleAttributes,
         formatDate
     });
 });

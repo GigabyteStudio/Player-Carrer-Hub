@@ -1,28 +1,30 @@
-# Dependências
+
+# Dependencias locais
 node_modules/
 
-# Banco local
-*.db
-*.sqlite
+# Banco de dados pessoal
+/database/*.sqlite
+/database/*.sqlite-*
+/database/*.db
+/database/*.db-*
 
-# -------------------------
-# Uploads
-# -------------------------
+# Backups locais
+/backup/
 
-# Ignora todos os arquivos dentro de uploads
-uploads/**
+# Fotos do jogador
+/public/uploads/players/*
+!/public/uploads/players/.gitkeep
 
-# Mantém a estrutura das pastas
-!uploads/
-!uploads/clubs/
-!uploads/competitions/
-!uploads/countries/
-!uploads/players/
-!uploads/trophies/
+# Imagens de trofeus da carreira
+/public/uploads/trophies/*
+!/public/uploads/trophies/.gitkeep
 
-# Mantém um arquivo vazio em cada pasta
-!uploads/clubs/.gitkeep
-!uploads/competitions/.gitkeep
-!uploads/countries/.gitkeep
-!uploads/players/.gitkeep
-!uploads/trophies/.gitkeep
+# Segredos e configuracoes locais
+.env
+.env.*
+!.env.example
+
+# Logs e arquivos do sistema
+*.log
+.DS_Store
+Thumbs.db

@@ -1,0 +1,22 @@
+<%- include('partials/header', { title }) %>
+<%- include('partials/navbar') %>
+<link rel="stylesheet" href="/css/pages-v2.css"><link rel="stylesheet" href="/css/records-v2.css">
+<main class="container pch-inner-page pch-record-page">
+<div class="pch-page-heading"><div><div class="pch-overline">EDITAR REGISTRO</div><h1><%= title %></h1><p>Atualize os campos e salve as alterações.</p></div><a class="pch-record-back" href="<%= returnUrl %>">← Voltar</a></div>
+<section class="pch-record-panel"><form method="post" action="<%= action %>" class="pch-record-form" <%= kind==='tipo'?'enctype="multipart/form-data"':'' %>><div class="pch-record-grid">
+<% const field=(label,name,type='text',required=false,extra='')=>{const raw=record[name]??'';const value=String(raw).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');return '<label class="pch-record-field"><span>'+label+'</span><input type="'+type+'" name="'+name+'" value="'+value+'" '+(required?'required':'')+' '+extra+'></label>';}; %>
+<% const select=(label,name,rows,required=false,empty='Selecione...')=>{const selected=record[name];return '<label class="pch-record-field"><span>'+label+'</span><select name="'+name+'" '+(required?'required':'')+'><option value="">'+empty+'</option>'+rows.map(r=>'<option value="'+r.id+'" '+(String(selected??'')===String(r.id)?'selected':'')+'>'+String(r.name).replace(/</g,'&lt;')+'</option>').join('')+'</select></label>';}; %>
+<% if(kind==='evolucao'){ %>
+<%- field('Data','date','date',true) %><%- field('Idade','age','number') %><%- field('Overall','overall','number',true,'min="0" max="99"') %>
+<% const keys=isGK?['gk_diving','gk_handling','gk_kicking','gk_reflexes','gk_speed','gk_positioning']:['pace','shooting','passing','dribbling','defending','physical']; keys.forEach(k=>{ %><%- field(attrLabels[k],k,'number',false,'min="0" max="99"') %><% }); %>
+<%- field('Valor de mercado (€)','market_value','number',false,'min="0"') %><%- field('Salário (€)','salary','number',false,'min="0"') %>
+<% }else if(kind==='lesoes'){ %>
+<%- select('Temporada','season_id',seasons,true) %><%- field('Lesão','injury_name','text',true) %><%- field('Data da lesão','injury_date','date') %><%- field('Dias lesionado','days_injured','number',false,'min="0"') %><%- field('Partidas perdidas','games_missed','number',false,'min="0"') %>
+<% }else if(kind==='conquistas'){ %>
+<%- select('Título ou prêmio','trophy_id',trophies,true) %><%- select('Temporada','season_id',seasons) %><%- select('Clube','club_id',clubs) %><%- select('Competição','competition_id',competitions) %><%- field('Observação','extra_info') %>
+<% }else if(kind==='tipo'){ %>
+<%- field('Nome do título ou prêmio','name','text',true) %><%- field('Importância','importance','number',true,'min="1" max="100"') %>
+<label class="pch-record-field"><span>Nova imagem (opcional)</span><input type="file" name="image" accept="image/png,image/jpeg,image/webp"></label>
+<% } %>
+</div><div class="pch-record-actions"><button class="pch-primary-action" type="submit">Salvar alterações</button><a class="pch-record-back" href="<%= returnUrl %>">Cancelar</a></div></form></section></main>
+<%- include('partials/footer') %>

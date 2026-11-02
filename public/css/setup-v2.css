@@ -1,0 +1,259 @@
+/* Cadastro inicial / edição de jogador */
+.pch-setup {
+    max-width: 1260px
+}
+
+.pch-setup-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 350px;
+    gap: 18px;
+    align-items: start
+}
+
+.pch-setup-main {
+    display: flex;
+    flex-direction: column;
+    gap: 18px
+}
+
+.pch-setup-panel {
+    background: #191f18;
+    border: 1px solid #2b3429;
+    border-radius: 9px;
+    padding: 25px;
+    min-width: 0
+}
+
+.pch-setup-section {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px
+}
+
+.pch-setup-section>span {
+    font: 800 23px 'Barlow Condensed';
+    color: #c9ef76;
+    border: 1px solid #475b35;
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 6px
+}
+
+.pch-setup-section h2 {
+    font-size: 24px;
+    line-height: 1;
+    margin: 0 0 5px;
+    color: #f0f4e7
+}
+
+.pch-setup-section p {
+    color: #94a18e;
+    font-size: 11px;
+    margin: 0
+}
+
+.pch-setup-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px
+}
+
+.pch-full {
+    grid-column: 1/-1
+}
+
+.pch-field {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    color: #cfdbc7;
+    font-weight: 700;
+    font-size: 11px
+}
+
+.pch-field input:not([type=range]),
+.pch-field select {
+    height: 44px;
+    box-sizing: border-box;
+    border: 1px solid #394734;
+    border-radius: 5px;
+    background: #11170f;
+    color: #eff4e9;
+    padding: 0 12px;
+    width: 100%;
+    font: 500 13px 'DM Sans', sans-serif
+}
+
+.pch-field input:focus,
+.pch-field select:focus {
+    outline: 2px solid #badf6e;
+    outline-offset: 1px
+}
+
+.pch-field input[type=range] {
+    width: 100%;
+    accent-color: #c9ef76
+}
+
+.pch-field-label {
+    display: flex;
+    justify-content: space-between;
+    color: #cfdbc7;
+    font-size: 11px;
+    font-weight: 700
+}
+
+.pch-field-label small {
+    color: #c9ef76
+}
+
+.pch-position-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px
+}
+
+.pch-position-option {
+    cursor: pointer;
+    position: relative
+}
+
+.pch-position-option input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px
+}
+
+.pch-position-option span {
+    display: block;
+    border: 1px solid #43513b;
+    color: #c0cdb8;
+    background: #121911;
+    border-radius: 5px;
+    padding: 10px 13px;
+    font-size: 12px;
+    font-weight: 700
+}
+
+.pch-position-option input:checked+span {
+    background: #c9ef76;
+    color: #17210d;
+    border-color: #c9ef76
+}
+
+.pch-position-option input:focus-visible+span {
+    outline: 2px solid white
+}
+
+.pch-hint {
+    color: #97a790;
+    font-size: 11px;
+    line-height: 1.6;
+    font-weight: 400;
+    margin: 10px 0 18px
+}
+
+.pch-setup-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-bottom: 20px
+}
+
+.pch-setup-actions button {
+    cursor: pointer
+}
+
+.pch-setup-alert {
+    padding: 14px 18px;
+    background: #3e221f;
+    border: 1px solid #aa6558;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    color: #ffd8d2
+}
+
+.pch-photo-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px
+}
+
+.pch-photo-card .pch-setup-section {
+    margin-bottom: 6px
+}
+
+.pch-photo-preview {
+    height: 340px;
+    border: 1px dashed #42503a;
+    border-radius: 8px;
+    background: radial-gradient(circle at center, #293522, #111810);
+    overflow: hidden;
+    position: relative;
+    display: grid;
+    place-items: center
+}
+
+.pch-photo-preview img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: object-position .15s;
+}
+
+.pch-photo-preview img[hidden] {
+    display: none
+}
+
+.pch-photo-placeholder {
+    font: 700 23px 'Barlow Condensed';
+    color: #697c5f
+}
+
+.pch-photo-placeholder[hidden] {
+    display: none
+}
+
+.pch-photo-upload {
+    background: #263521;
+    color: #e6f3dc;
+    border: 1px solid #465d37;
+    border-radius: 6px;
+    text-align: center;
+    cursor: pointer;
+    padding: 12px;
+    font-weight: 700
+}
+
+.pch-photo-upload input {
+    display: none
+}
+
+@media(max-width:1050px) {
+    .pch-setup-layout {
+        grid-template-columns: 1fr
+    }
+
+    .pch-photo-card {
+        max-width: 520px
+    }
+}
+
+@media(max-width:520px) {
+    .pch-setup-grid {
+        grid-template-columns: 1fr
+    }
+
+    .pch-full {
+        grid-column: auto
+    }
+
+    .pch-setup-panel {
+        padding: 19px
+    }
+}

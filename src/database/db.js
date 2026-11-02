@@ -12,6 +12,9 @@ db.exec(`
 
   name TEXT NOT NULL,
   photo TEXT,
+  photo_position_x INTEGER DEFAULT 50,
+  photo_position_y INTEGER DEFAULT 50,
+  photo_zoom REAL DEFAULT 1,
 
   shirt_number TEXT,
   sponsor TEXT,
@@ -99,6 +102,12 @@ CREATE TABLE IF NOT EXISTS trophy_entries (
   dribbling INTEGER,
   defending INTEGER,
   physical INTEGER,
+  gk_diving INTEGER,
+  gk_handling INTEGER,
+  gk_kicking INTEGER,
+  gk_reflexes INTEGER,
+  gk_speed INTEGER,
+  gk_positioning INTEGER,
 
   market_value INTEGER,
   salary INTEGER,
@@ -216,5 +225,16 @@ CREATE TABLE IF NOT EXISTS trophy_entries (
   updated_at TEXT DEFAULT CURRENT_TIMESTAMP
   );
 `);
+
+// Atualizações não destrutivas para bancos existentes.
+function ensureColumn(table, name, definition) {
+  const columns = db.prepare(`PRAGMA table_info(${table})`).all();
+  if (!columns.some(column => column.name === name)) {
+    db.exec(`ALTER TABLE ${table} ADD COLUMN ${name} ${definition}`);
+  }
+}
+for (const [name, definition] of Object.entries({photo_position_x:'INTEGER DEFAULT 50',photo_position_y:'INTEGER DEFAULT 50',photo_zoom:'REAL DEFAULT 1'})) ensureColumn('players',name,definition);
+for (const name of ['skill_moves','weak_foot']) ensureColumn('players',name,'INTEGER DEFAULT 0');
+for (const name of ['gk_diving','gk_handling','gk_kicking','gk_reflexes','gk_speed','gk_positioning']) ensureColumn('attribute_progress',name,'INTEGER');
 
 module.exports = db;

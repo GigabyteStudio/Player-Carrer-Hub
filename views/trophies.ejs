@@ -1,75 +1,116 @@
 <%- include('partials/header', { title }) %>
-    <%- include('partials/navbar') %>
+<%- include('partials/navbar') %>
+<link rel="stylesheet" href="/css/pages-v2.css">
+<link rel="stylesheet" href="/css/records-v2.css">
+<link rel="stylesheet" href="/css/trophies-grouped-v2.css">
 
-        <main class="container">
-            <section class="page-header">
-                <h1>Troféus e Conquistas</h1>
-                <p>Títulos, artilharias, prêmios e conquistas individuais.</p>
-            </section>
+<main class="container pch-inner-page">
+  <div class="pch-page-heading">
+    <div>
+      <div class="pch-overline">CARREIRA</div>
+      <h1>Conquistas</h1>
+      <p>Títulos, premiações e reconhecimentos individuais.</p>
+    </div>
+    <div class="pch-trophy-header-actions">
+      <label class="pch-trophy-edit-toggle" for="pchToggleEdit">
+        <input type="checkbox" id="pchToggleEdit">
+        <span>Modo de edição</span>
+      </label>
+      <a class="pch-primary-action" href="/registrar/conquistas">+ Registrar conquista</a>
+    </div>
+  </div>
 
-            <section class="trophies-grid">
-                <% trophyGroups.forEach(trophy=> { %>
-                    <article class="trophy-card">
-                        <div class="trophy-card-header">
-                            <h2>
-                                <%= trophy.quantity %>x <%= trophy.name %>
-                            </h2>
+  <div class="pch-trophy-grid" id="pchTrophyGrid">
+    <% if (trophyGroups.length) { %>
+      <% trophyGroups.forEach(t => { %>
+        <% const records = entriesByTrophy[t.id] || []; %>
+        <% const grouped = new Map(); %>
+        <% records.forEach(e => { %>
+          <% // Preserve individual items in SQLite; consolidate only identical contexts visually. %>
+          <% const groupKey = JSON.stringify([e.season_id ?? e.season_name ?? null, e.club_id ?? e.club_name ?? null, e.competition_id ?? e.competition_name ?? null, e.extra_info ?? null]); %>
+          <% if (!grouped.has(groupKey)) grouped.set(groupKey, { representative: e, items: [] }); %>
+          <% grouped.get(groupKey).items.push(e); %>
+        <% }); %>
+
+        <article class="pch-panel pch-trophy-card">
+          <div class="pch-trophy-top">
+            <div class="pch-trophy-art">
+              <% if (t.image) { %>
+                <img src="<%= t.image %>" alt="Imagem de <%= t.name %>">
+              <% } else { %>
+                <span>★</span>
+              <% } %>
+            </div>
+            <div>
+              <span class="pch-overline">CONQUISTA</span>
+              <h3><%= t.name %></h3>
+              <div class="pch-trophy-quantity">
+                <strong><%= t.quantity %></strong>
+                <%= Number(t.quantity) === 1 ? 'conquista' : 'conquistas' %>
+              </div>
+            </div>
+          </div>
+
+          <div class="pch-inline-actions">
+            <a href="/registrar/conquistas/tipo/editar/<%= t.id %>">Editar título</a>
+            <form method="post" action="/registrar/conquistas/tipo/excluir/<%= t.id %>" onsubmit="return confirm('Excluir este título e TODAS as suas conquistas?')">
+              <button type="submit" class="pch-danger">Excluir título</button>
+            </form>
+          </div>
+
+          <div class="pch-trophy-entries">
+            <% if (grouped.size) { %>
+              <% grouped.forEach(group => { const e = group.representative; const count = group.items.length; %>
+                <div class="pch-trophy-entry pch-grouped-entry">
+                  <div class="pch-grouped-heading">
+                    <strong><%= e.season_name || 'Sem temporada' %></strong>
+                    <% if (count > 1) { %>
+                      <span class="pch-grouped-count"><%= count %> vezes</span>
+                    <% } %>
+                  </div>
+                  <div class="pch-trophy-meta">
+                    <% if (e.club_logo) { %><img src="<%= e.club_logo %>" alt=""><% } %>
+                    <% if (e.club_name) { %><span><%= e.club_name %></span><% } %>
+                    <% if (e.competition_logo) { %><img src="<%= e.competition_logo %>" alt=""><% } %>
+                    <% if (e.competition_name) { %><span><%= e.competition_name %></span><% } %>
+                  </div>
+                  <% if (e.extra_info) { %><small><%= e.extra_info %></small><% } %>
+
+                  <div class="pch-grouped-edit-items">
+                    <% group.items.forEach((item, index) => { %>
+                      <div class="pch-grouped-edit-item">
+                        <span>Registro <%= index + 1 %><% if (count > 1) { %> de <%= count %><% } %></span>
+                        <div class="pch-inline-actions">
+                          <a href="/registrar/conquistas/editar/<%= item.id %>">Editar</a>
+                          <form method="post" action="/registrar/conquistas/excluir/<%= item.id %>" onsubmit="return confirm('Excluir apenas esta conquista recebida?')">
+                            <button type="submit" class="pch-danger">Excluir</button>
+                          </form>
                         </div>
+                      </div>
+                    <% }); %>
+                  </div>
+                </div>
+              <% }); %>
+            <% } else { %>
+              <div class="pch-muted">Nenhuma conquista atribuída ainda.</div>
+            <% } %>
+          </div>
+        </article>
+      <% }); %>
+    <% } else { %>
+      <section class="pch-panel pch-full-empty">
+        <div class="pch-list-empty">Nenhum troféu ou conquista cadastrado ainda.</div>
+      </section>
+    <% } %>
+  </div>
+</main>
 
-                        <div class="trophy-card-body">
-                            <div class="trophy-image-box">
-                                <% if (trophy.image) { %>
-                                    <img src="<%= trophy.image %>" class="trophy-image">
-                                    <% } else { %>
-                                        <div class="trophy-placeholder">Sem imagem</div>
-                                        <% } %>
-                            </div>
-
-                            <div class="trophy-details">
-                                <% const entries=entriesByTrophy[trophy.id] || []; %>
-
-                                    <% if (entries.length===0) { %>
-                                        <p>Nenhuma conquista cadastrada.</p>
-                                        <% } %>
-
-                                            <% entries.forEach(entry=> { %>
-                                                <div class="trophy-entry-line">
-                                                    <strong>
-                                                        <%= entry.season_name || '-' %>
-                                                    </strong>
-
-                                                    <% if (entry.club_logo) { %>
-                                                        <img src="<%= entry.club_logo %>" class="table-flag">
-                                                        <% } %>
-
-                                                            <% if (entry.club_name) { %>
-                                                                <span>
-                                                                    <%= entry.club_name %>
-                                                                </span>
-                                                                <% } %>
-
-                                                                    <% if (entry.competition_logo) { %>
-                                                                        <img src="<%= entry.competition_logo %>"
-                                                                            class="table-flag">
-                                                                        <% } %>
-
-                                                                            <% if (entry.competition_name) { %>
-                                                                                <span>
-                                                                                    <%= entry.competition_name %>
-                                                                                </span>
-                                                                                <% } %>
-
-                                                                                    <% if (entry.extra_info) { %>
-                                                                                        <span>- <%= entry.extra_info %>
-                                                                                                </span>
-                                                                                        <% } %>
-                                                </div>
-                                                <% }) %>
-                            </div>
-                        </div>
-                    </article>
-                    <% }) %>
-            </section>
-        </main>
-
-        <%- include('partials/footer') %>
+<script>
+(() => {
+  const toggle = document.getElementById('pchToggleEdit');
+  const grid = document.getElementById('pchTrophyGrid');
+  if (!toggle || !grid) return;
+  toggle.addEventListener('change', () => grid.classList.toggle('pch-editing', toggle.checked));
+})();
+</script>
+<%- include('partials/footer') %>

@@ -1,0 +1,35 @@
+<%- include('partials/header', { title }) %>
+<%- include('partials/navbar') %>
+<link rel="stylesheet" href="/css/pages-v2.css">
+<link rel="stylesheet" href="/css/records-v2.css">
+<main class="container pch-inner-page pch-record-page">
+ <div class="pch-page-heading"><div><div class="pch-overline">NOVO REGISTRO</div><h1><%= title %></h1><p>Preencha os dados e salve para atualizar o histórico.</p></div><a class="pch-record-back" href="<%= returnUrl %>">← Voltar</a></div>
+ <% const seasonOptions = seasons.map(s=>({id:s.id,name:s.name,chosen:!!s.is_current})); %>
+ <% const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); %>
+ <% const selectField=(label,name,items,required=false,empty='Selecione...')=>'<label class="pch-record-field"><span>'+esc(label)+'</span><select name="'+esc(name)+'" '+(required?'required':'')+'><option value="">'+esc(empty)+'</option>'+items.map(i=>'<option value="'+esc(i.id)+'" '+(i.chosen?'selected':'')+'>'+esc(i.name)+'</option>').join('')+'</select></label>'; %>
+ <% const inputField=(label,name,kind='number',required=false,extra='')=>'<label class="pch-record-field"><span>'+esc(label)+'</span><input type="'+esc(kind)+'" name="'+esc(name)+'" '+(required?'required':'')+' '+(kind==='number'?'min="0"':'')+' '+extra+'></label>'; %>
+ <% if(type==='conquistas'){ %>
+ <section class="pch-record-panel"><div class="pch-record-panel-head"><h2>1. Cadastrar título ou prêmio</h2><p>Cadastre uma vez o nome da conquista. Depois registre cada vez que ela for obtida.</p></div><form method="post" action="/registrar/conquistas/tipo" enctype="multipart/form-data" class="pch-record-form"><div class="pch-record-grid"><%- inputField('Nome do título ou premiação','name','text',true) %><%- inputField('Importância (ordenação)','importance','number',false,'value="1" max="100"') %><label class="pch-record-field"><span>Imagem (opcional, até 5 MB)</span><input type="file" name="image" accept="image/png,image/jpeg,image/webp"></label></div><div class="pch-record-actions"><button type="submit" class="pch-primary-action">Cadastrar conquista</button></div></form></section>
+ <section class="pch-record-panel"><div class="pch-record-panel-head"><h2>2. Registrar conquista recebida</h2><p>Vincule uma conquista a uma temporada, clube ou competição.</p></div><form method="post" action="/registrar/conquistas" class="pch-record-form"><input type="hidden" name="action" value="entry"><div class="pch-record-grid"><%- selectField('Título ou prêmio','trophy_id',trophies,true) %><%- selectField('Temporada','season_id',seasonOptions) %><%- selectField('Clube ou seleção','club_id',clubs) %><%- selectField('Competição','competition_id',competitions) %><%- inputField('Observação (opcional)','extra_info','text') %></div><div class="pch-record-actions"><button class="pch-primary-action" type="submit" <%= trophies.length?'':'disabled' %>>Registrar conquista</button></div></form></section>
+ <% }else{ %>
+ <section class="pch-record-panel"><div class="pch-record-panel-head"><h2>Dados do registro</h2><p>Os campos marcados como obrigatórios devem ser preenchidos.</p></div><form method="post" action="/registrar/<%= type %>" class="pch-record-form"><div class="pch-record-grid">
+ <% if(type==='estatisticas'){ %>
+ <div class="pch-record-wide pch-record-tip">Escolha a temporada, o clube e a competição. Se já existir um registro para essa combinação, os números serão atualizados.</div>
+ <%- selectField('Temporada','season_id',seasonOptions) %><%- selectField('Clube ou seleção','club_id',clubs) %><%- selectField('Competição','competition_id',competitions) %><%- inputField('Posição final na competição','final_position','text') %>
+ <% ['games|Partidas','goals|Gols','assists|Assistências','yellow_cards|Cartões amarelos','second_yellow_cards|Segundo amarelo','red_cards|Cartões vermelhos'].forEach(item=>{const [key,label]=item.split('|');void 0; %><%- inputField(label,key,'number',key==='games'||key==='goals'||key==='assists','value="0" step="1"') %><% }); %>
+ <%- inputField('Nota média (0 a 10)','average_rating','number',false,'min="0" max="10" step="0.01"') %>
+ <label class="pch-record-check"><input type="checkbox" name="top_scorer" value="1"> Artilheiro da competição</label><label class="pch-record-check"><input type="checkbox" name="top_assister" value="1"> Líder de assistências</label>
+ <% } else if(type==='evolucao'){ %>
+ <%- inputField('Data do registro','date','date',true) %><%- inputField('Idade','age','number',false,`value="${player.age||''}"`) %><%- inputField('Overall','overall','number',true,'min="0" max="99"') %>
+ <% const isGK=(player.positions||'').split(',').map(p=>p.trim()).includes('GOL');const keys=isGK?['gk_diving','gk_handling','gk_kicking','gk_reflexes','gk_speed','gk_positioning']:['pace','shooting','passing','dribbling','defending','physical'];keys.forEach(key=>{ %><%- inputField(attrLabels[key],key,'number',false,'min="0" max="99"') %><% }); %>
+ <%- inputField('Valor de mercado (€)','market_value','number',false,'step="1"') %><%- inputField('Salário (€)','salary','number',false,'step="1"') %>
+ <% }else if(type==='transferencias'){ %>
+ <%- selectField('Temporada','season_id',seasonOptions,true) %><%- inputField('Data da transferência','date','date',true) %><%- selectField('Clube de origem','from_club_id',clubs,false,'Início da carreira / sem clube') %><%- selectField('Clube de destino','to_club_id',clubs,true) %><%- inputField('Valor de mercado (€)','market_value','text',false,'inputmode="numeric" data-money') %><%- inputField('Valor pago (€)','transfer_fee','text',false,'inputmode="numeric" data-money') %><%- inputField('Contrato até','contract_until','date') %>
+ <% }else if(type==='lesoes'){ %>
+ <%- selectField('Temporada','season_id',seasonOptions,true) %><%- inputField('Lesão','injury_name','text',true) %><%- inputField('Data da lesão','injury_date','date') %><%- inputField('Dias lesionado','days_injured','number',false,'value="0" step="1"') %><%- inputField('Partidas perdidas','games_missed','number',false,'value="0" step="1"') %>
+ <% } %>
+ </div><div class="pch-record-actions"><button type="submit" class="pch-primary-action">Salvar registro</button><a class="pch-record-back" href="<%= returnUrl %>">Cancelar</a></div></form></section>
+ <% } %>
+</main>
+<script src="/js/records-money.js" defer></script>
+<%- include('partials/footer') %>

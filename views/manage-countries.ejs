@@ -1,71 +1,24 @@
-<%- include('partials/header', { title }) %>
-    <%- include('partials/navbar') %>
-
-        <main class="container">
-            <section class="page-header">
-                <h1>Países</h1>
-                <p>Cadastre países e bandeiras usadas no sistema.</p>
-            </section>
-
-            <section class="form-card">
-                <h2>Adicionar País</h2>
-
-                <form action="/gerenciar/paises/adicionar" method="POST" enctype="multipart/form-data"
-                    class="form-grid">
-                    <div class="form-group">
-                        <label>Nome do País</label>
-                        <input type="text" name="name" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Bandeira</label>
-                        <input type="file" name="flag" accept="image/*">
-                    </div>
-
-                    <button type="submit" class="btn-primary">Adicionar</button>
-                </form>
-            </section>
-
-            <section class="table-card">
-                <h2>Países cadastrados</h2>
-
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Bandeira</th>
-                            <th>País</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        <% countries.forEach(country=> { %>
-                            <tr>
-                                <td>
-                                    <% if (country.flag) { %>
-                                        <img src="<%= country.flag %>" class="table-flag">
-                                        <% } else { %>
-                                            -
-                                            <% } %>
-                                </td>
-
-                                <td>
-                                    <%= country.name %>
-                                </td>
-
-                                <td class="actions-cell">
-                                    <a class="btn-small" href="/gerenciar/paises/editar/<%= country.id %>">Editar</a>
-
-                                    <form action="/gerenciar/paises/excluir/<%= country.id %>" method="POST"
-                                        onsubmit="return confirm('Excluir este país?')">
-                                        <button type="submit" class="btn-danger">Excluir</button>
-                                    </form>
-                                </td>
-                            </tr>
-                            <% }) %>
-                    </tbody>
-                </table>
-            </section>
-        </main>
-
-        <%- include('partials/footer') %>
+<%- include('partials/header', {title}) %>
+<%- include('partials/navbar') %>
+<link rel="stylesheet" href="/css/manage-v2.css">
+<main class="container pch-manage">
+  <div class="pch-mhead"><a class="pch-back" href="/gerenciar">← Gerenciar</a><div class="pch-eyebrow">CADASTROS</div><h1>Países</h1><p>A lista de países já está disponível. Envie uma imagem apenas para os países que desejar.</p></div>
+  <% if(error){ %><div class="pch-merror"><%= error %></div><% } %>
+  <section class="pch-mpanel"><div class="pch-mpanel-head"><h2>Bandeira de país</h2><span>JPG, PNG ou WebP · até 5 MB</span></div>
+    <form action="/gerenciar/paises/bandeira" method="post" enctype="multipart/form-data" class="pch-mform">
+      <label>País<select name="country_code" required><option value="">Selecione o país</option><% countries.forEach(c=>{ %><option value="<%= c.code %>"><%= c.name %><%= c.saved?.flag ? ' ✓' : '' %></option><% }) %></select></label>
+      <label>Bandeira<input type="file" name="flag" accept="image/png,image/jpeg,image/webp" required></label>
+      <button class="pch-mbtn" type="submit">Salvar bandeira</button>
+    </form>
+  </section>
+  <section class="pch-mpanel"><div class="pch-mpanel-head"><h2>Países disponíveis</h2><span><%= countries.filter(c=>c.saved?.flag).length %> com imagem / <%= countries.length %> países</span></div>
+    <div class="pch-mtoolbar"><input id="countrySearch" type="search" placeholder="Buscar país..." aria-label="Buscar país"><label class="pch-check"><input id="onlyFlags" type="checkbox"> Apenas com bandeira</label></div>
+    <div class="pch-mtable-wrap"><table class="pch-mtable"><thead><tr><th>País</th><th>Bandeira</th><th>Ação</th></tr></thead><tbody>
+    <% countries.forEach(c=>{ %><tr class="country-row" data-name="<%= c.name.toLocaleLowerCase('pt-BR') %>" data-flag="<%= c.saved?.flag ? 1 : 0 %>"><td><strong><%= c.name %></strong></td><td><% if(c.saved?.flag){ %><img class="pch-flag" src="<%= c.saved.flag %>" alt="Bandeira de <%= c.name %>"><% } else { %><span class="pch-mmuted">Sem imagem</span><% } %></td><td><% if(c.saved?.flag){ %><form method="post" action="/gerenciar/paises/remover-bandeira/<%= c.saved.id %>" onsubmit="return confirm('Remover a bandeira? O país será mantido.')"><button type="submit" class="pch-linkdanger">Remover imagem</button></form><% } else { %><span class="pch-mmuted">—</span><% } %></td></tr><% }) %>
+    </tbody></table></div>
+  </section>
+</main>
+<script>
+(() => {const search=document.getElementById('countrySearch');const check=document.getElementById('onlyFlags');const rows=document.querySelectorAll('.country-row');function filter(){const q=search.value.toLocaleLowerCase('pt-BR').trim();rows.forEach(row=>row.hidden=!row.dataset.name.includes(q)||(check.checked&&row.dataset.flag!=='1'));}search.addEventListener('input',filter);check.addEventListener('change',filter);})();
+</script>
+<%- include('partials/footer') %>

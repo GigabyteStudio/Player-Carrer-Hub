@@ -1,13 +1,14 @@
 {
   "name": "player-career-hub",
   "version": "1.0.0",
-  "description": "Sistema para gerenciamento de carreiras de jogadores de futebol inspirado no EA FC e Transfermarkt.",
+  "description": "Sistema para gerenciamento de carreiras de jogadores de futebol inspirado no EA FC.",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/app.js",
     "start": "node src/app.js",
     "reset": "node scripts/reset.js",
-    "backup": "node scripts/backup.js"
+    "backup": "node scripts/backup.js",
+    "reset:all": "node scripts/reset.js --all"
   },
   "keywords": [],
   "author": "",

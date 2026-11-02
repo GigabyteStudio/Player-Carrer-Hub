@@ -1,104 +1,58 @@
 const express = require('express');
-const multer = require('multer');
-const path = require('path');
 const db = require('../database/db');
-const formatDate = require("../utils/formatDate");
-
+const images = require('../utils/namedImages');
 const router = express.Router();
-
-function slugify(text) {
-    return text
-        .trim()
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)/g, '');
+const categories = ['Liga', 'Copa Nacional', 'Copa da Liga', 'Continental', 'Amistoso', 'Seleção'];
+const upload = images.stagingUpload('competitions', 'logo');
+function render(res, status = 200, error = null) {
+  return res.status(status).render('manage-competitions', {
+    title: 'Competições', error, categories,
+    countries: db.prepare('SELECT * FROM countries ORDER BY name COLLATE NOCASE').all(),
+    competitions: db.prepare(`SELECT co.*, c.name AS country_name, c.flag AS country_flag
+      FROM competitions co LEFT JOIN countries c ON c.id=co.country_id ORDER BY co.name COLLATE NOCASE`).all()
+  });
 }
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'public/uploads/competitions');
-    },
-    filename: (req, file, cb) => {
-        const ext = path.extname(file.originalname);
-        cb(null, `${slugify(req.body.name)}${ext}`);
+router.get('/', (_req, res) => render(res));
+function save(req, res, editing = false) {
+  upload(req, res, err => {
+    if (err) return render(res, 400, 'Logo inválida. Use JPG, PNG ou WebP com até 5 MB.');
+    const name = String(req.body.name || '').trim();
+    const category = req.body.category;
+    const countryId = req.body.country_id ? Number(req.body.country_id) : null;
+    const country = countryId === null ? null : db.prepare('SELECT id FROM countries WHERE id=?').get(countryId);
+    const old = editing ? db.prepare('SELECT * FROM competitions WHERE id=?').get(req.params.id) : null;
+    if (!name || name.length > 100 || !categories.includes(category) || (countryId !== null && !country) || (editing && !old)) {
+      images.discard(req.file);
+      return render(res, 400, 'Informe nome e categoria válidos. Se escolher um país, ele deve ser válido.');
     }
-});
-
-const upload = multer({ storage });
-
-router.get('/', (req, res) => {
-    const competitions = db.prepare(`
-    SELECT 
-      competitions.*,
-      countries.name AS country_name,
-      countries.flag AS country_flag
-    FROM competitions
-    LEFT JOIN countries ON countries.id = competitions.country_id
-    ORDER BY competitions.name ASC
-  `).all();
-
-    const countries = db.prepare(`
-    SELECT * FROM countries
-    ORDER BY name ASC
-  `).all();
-
-    res.render('manage-competitions', {
-        title: 'Competições',
-        competitions,
-        countries,
-        formatDate
-    });
-});
-
-router.post('/adicionar', upload.single('logo'), (req, res) => {
-    const { name, category, country_id } = req.body;
-    const logo = req.file ? `/uploads/competitions/${req.file.filename}` : null;
-
-    db.prepare(`
-    INSERT INTO competitions (name, category, country_id, logo)
-    VALUES (?, ?, ?, ?)
-  `).run(name, category, country_id || null, logo);
-
-    res.redirect('/gerenciar/competicoes');
-});
-
-router.get('/editar/:id', (req, res) => {
-    const competition = db.prepare(`
-    SELECT * FROM competitions WHERE id = ?
-  `).get(req.params.id);
-
-    const countries = db.prepare(`
-    SELECT * FROM countries
-    ORDER BY name ASC
-  `).all();
-
-    res.render('edit-competition', {
-        title: 'Editar Competição',
-        competition,
-        countries
-    });
-});
-
-router.post('/editar/:id', upload.single('logo'), (req, res) => {
-    const { id } = req.params;
-    const { name, category, country_id, current_logo } = req.body;
-
-    const logo = req.file ? `/uploads/competitions/${req.file.filename}` : current_logo;
-
-    db.prepare(`
-    UPDATE competitions
-    SET name = ?, category = ?, country_id = ?, logo = ?, updated_at = CURRENT_TIMESTAMP
-    WHERE id = ?
-  `).run(name, category, country_id || null, logo, id);
-
-    res.redirect('/gerenciar/competicoes');
-});
-
+    try {
+      const logo = images.resolvedUrl('competitions', name, req.file, old?.logo, old?.name);
+      images.finalize('competitions', name, req.file);
+      if (editing) {
+        db.prepare('UPDATE competitions SET name=?,category=?,country_id=?,logo=?,updated_at=CURRENT_TIMESTAMP WHERE id=?')
+          .run(name, category, countryId, logo, old.id);
+      } else {
+        db.prepare('INSERT INTO competitions(name,category,country_id,logo) VALUES(?,?,?,?)')
+          .run(name, category, countryId, logo);
+      }
+      res.redirect('/gerenciar/competicoes');
+    } catch (e) {
+      console.error(e);
+      images.discard(req.file);
+      render(res, 500, 'Não foi possível salvar a competição.');
+    }
+  });
+}
+router.post('/adicionar', (req, res) => save(req, res));
+router.post('/editar/:id', (req, res) => save(req, res, true));
 router.post('/excluir/:id', (req, res) => {
-    db.prepare('DELETE FROM competitions WHERE id = ?').run(req.params.id);
+  try {
+    db.prepare('DELETE FROM competitions WHERE id=?').run(req.params.id);
+    // Mantém a imagem no disco para futuros cadastros.
     res.redirect('/gerenciar/competicoes');
+  } catch (e) {
+    console.error(e);
+    render(res, 400, 'Não é possível excluir competição vinculada a outros registros.');
+  }
 });
-
 module.exports = router;

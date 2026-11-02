@@ -1,20 +1,24 @@
 # Player Career Hub
 
-Sistema desenvolvido para gerenciamento de carreiras de jogadores de futebol no EA FC, inspirado no Transfermarkt e adaptado para registrar toda a evolução de um jogador ao longo de sua carreira.
+Sistema web desenvolvido para registrar, organizar e acompanhar a carreira de um jogador de futebol no modo Carreira de Jogador do EA Sports FC.
+
+O projeto permite acompanhar a evolução do atleta, suas estatísticas, transferências, conquistas e demais acontecimentos ao longo das temporadas.
 
 ## Recursos
 
-- Perfil completo do jogador
-- Evolução de Overall e atributos
-- Valor de mercado e histórico
-- Estatísticas por competição
+- Perfil completo do jogador, com fotografia e informações pessoais
+- Suporte a jogadores de linha e goleiros
+- Evolução de overall e atributos
+- Histórico de valor de mercado
+- Estatísticas por competição, temporada e clube
+- Histórico de transferências e contratos
+- Registro de títulos e premiações individuais
 - Histórico de lesões
-- Troféus e conquistas
-- Transferências
-- Temporadas e competições
-- Área administrativa
-- Anotações temporárias (LocalStorage)
-- Sistema de backup integrado
+- Gerenciamento de países, clubes, competições e temporadas
+- Upload e reutilização automática de bandeiras, escudos e logos
+- Gráficos interativos de evolução
+- Anotações de partidas com salvamento local
+- Sistema de backup e reset de dados
 
 ## Tecnologias
 
@@ -28,40 +32,47 @@ Sistema desenvolvido para gerenciamento de carreiras de jogadores de futebol no 
 
 ## Requisitos
 
-- Node.js 18 ou superior
+- Node.js e npm
 - Visual Studio Code (opcional)
 
 ## Instalação
 
-Baixe acima o repositório ou clone-o com o comando:
+Clone o repositório:
 
 ```bash
 git clone https://github.com/GigabyteStudio/Player-Carrer-Hub
 ```
 
-Instale as dependências:
+Acesse a pasta do projeto e instale as dependências:
 
 ```bash
 npm install
 ```
 
-Inicie o projeto:
+Inicie o servidor:
 
 ```bash
 npm start
 ```
 
-O sistema estará disponível em:
+Acesse o endereço local exibido no terminal.
 
-```
-http://localhost:3000
-```
+Na primeira utilização, o sistema solicitará o cadastro inicial do jogador.
 
-## Scripts
+## Comandos
 
 | Comando | Descrição |
-|---------|-----------|
-| `npm start` | Inicia o servidor em modo de uso |
+|---|---|
+| `npm start` | Inicia o servidor |
 | `npm run dev` | Inicia o servidor em modo de desenvolvimento (com nodemon) |
-| `npm run backup` | Cria um backup da database e da pasta de uploads |
-| `npm run reset` | Remove a database e todos os uploads |
+| `npm run backup` | Cria uma cópia de segurança do banco de dados e das imagens |
+| `npm run reset` | Exclui os dados da carreira e as imagens de jogadores e troféus, preservando as imagens reutilizáveis |
+| `npm run reset:all` | Exclui todos os dados e imagens, mediante duas confirmações |
+
+**Atenção:** os comandos de reset são destrutivos. Recomenda-se realizar um backup antes de utilizá-los.
+
+## Sobre o projeto
+
+O Player Career Hub é um projeto independente, desenvolvido pela GigabyteStudio para uso pessoal e acompanhamento de carreiras virtuais no EA Sports FC.
+
+A GigabyteStudio e este projeto não possuem vínculo oficial com a Electronic Arts ou a EA Sports.

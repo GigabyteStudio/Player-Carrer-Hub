@@ -1,72 +1,7 @@
 <%- include('partials/header', { title }) %>
-    <%- include('partials/navbar') %>
-
-        <main class="container">
-            <section class="page-header">
-                <h1>Histórico de Lesões</h1>
-                <p>Lesões, tempo fora e jogos perdidos ao longo da carreira.</p>
-            </section>
-
-            <section class="cards-grid">
-                <div class="card">
-                    <span class="card-label">Total de Lesões</span>
-                    <strong>
-                        <%= summary.total_injuries || 0 %>
-                    </strong>
-                </div>
-
-                <div class="card">
-                    <span class="card-label">Total de Dias Lesionado</span>
-                    <strong>
-                        <%= summary.total_days_injured || 0 %>
-                    </strong>
-                </div>
-
-                <div class="card">
-                    <span class="card-label">Total de Jogos Perdidos</span>
-                    <strong>
-                        <%= summary.total_games_missed || 0 %>
-                    </strong>
-                </div>
-            </section>
-
-            <section class="table-card">
-                <h2>Lesões</h2>
-
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Temporada</th>
-                            <th>Lesão</th>
-                            <th>Data da Lesão</th>
-                            <th>Dias Lesionado</th>
-                            <th>Jogos Perdidos</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        <% injuries.forEach(injury=> { %>
-                            <tr>
-                                <td>
-                                    <%= injury.season_name %>
-                                </td>
-                                <td>
-                                    <%= injury.injury_name %>
-                                </td>
-                                <td>
-                                    <%= formatDate(injury.injury_date) %>
-                                </td>
-                                <td>
-                                    <%= injury.days_injured || 0 %>
-                                </td>
-                                <td>
-                                    <%= injury.games_missed || 0 %>
-                                </td>
-                            </tr>
-                            <% }) %>
-                    </tbody>
-                </table>
-            </section>
-        </main>
-
-        <%- include('partials/footer') %>
+<%- include('partials/navbar') %>
+<link rel="stylesheet" href="/css/pages-v2.css">
+<link rel="stylesheet" href="/css/records-v2.css">
+<main class="container pch-inner-page"><div class="pch-page-heading"><div><div class="pch-overline">CARREIRA</div><h1>Lesões</h1><p>Histórico médico e períodos de ausência.</p></div><a class="pch-primary-action" href="/registrar/lesoes">+ Registrar lesão</a></div><div class="pch-stat-grid pch-three-col"><div class="pch-stat-card"><span>Lesões registradas</span><strong><%= summary.total_injuries || 0 %></strong><small>ao longo da carreira</small></div><div class="pch-stat-card"><span>Dias lesionado</span><strong><%= summary.total_days_injured || 0 %></strong><small>dias de recuperação</small></div><div class="pch-stat-card"><span>Partidas perdidas</span><strong><%= summary.total_games_missed || 0 %></strong><small>por lesões</small></div></div>
+<section class="pch-panel pch-below"><div class="pch-panel-title"><div><h3>Histórico de lesões</h3><p>Datas, duração e jogos perdidos.</p></div><span class="pch-count"><%= injuries.length %> registros</span></div><% if(injuries.length){%><div class="pch-table-scroll"><table class="pch-stat-table pch-detail-table"><thead><tr><th>Temporada</th><th>Lesão</th><th>Data</th><th>Dias lesionado</th><th>Jogos perdidos</th><th>Ações</th></tr></thead><tbody><% injuries.forEach(i=>{%><tr><td><strong><%= i.season_name %></strong></td><td><%= i.injury_name %></td><td><%= formatDate(i.injury_date) %></td><td><%= i.days_injured || 0 %></td><td><%= i.games_missed || 0 %></td><td><div class="pch-inline-actions"><a href="/registrar/lesoes/editar/<%= i.id %>">Editar</a><form method="post" action="/registrar/lesoes/excluir/<%= i.id %>" onsubmit="return confirm('Excluir esta lesão?')"><button type="submit" class="pch-danger">Excluir</button></form></div></td></tr><%})%></tbody></table></div><%}else{%><div class="pch-list-empty">Nenhum episódio de lesão cadastrado ainda.</div><%}%></section></main>
+<%- include('partials/footer') %>

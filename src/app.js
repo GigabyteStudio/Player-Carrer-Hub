@@ -22,6 +22,8 @@ const publicTrophyRoutes = require('./routes/publicTrophies');
 const publicStatsRoutes = require('./routes/publicStats');
 const publicEvolutionRoutes = require('./routes/publicEvolution');
 const notesRoutes = require('./routes/notes');
+const setupRoutes = require('./routes/setup');
+const recordsRoutes = require('./routes/records');
 
 //
 
@@ -36,6 +38,15 @@ app.use(express.json());
 
 app.use(express.static(path.join(__dirname, '../public')));
 
+app.use('/cadastro', setupRoutes);
+
+// Exige um jogador cadastrado antes das páginas da carreira.
+app.use((req, res, next) => {
+    const player = db.prepare('SELECT id FROM players LIMIT 1').get();
+    if (!player) return res.redirect('/cadastro');
+    next();
+});
+
 app.get('/', (req, res) => {
     res.redirect('/jogador');
 });
@@ -49,6 +60,7 @@ app.use('/trofeus', publicTrophyRoutes);
 app.use('/estatisticas', publicStatsRoutes);
 app.use('/evolucao', publicEvolutionRoutes);
 app.use('/anotacoes', notesRoutes);
+app.use('/registrar', recordsRoutes);
 
 // Seção Gerenciar
 

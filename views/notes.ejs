@@ -1,112 +1,40 @@
 <%- include('partials/header', { title }) %>
-    <%- include('partials/navbar') %>
-
-        <main class="container">
-            <section class="page-header">
-                <h1>Anotações</h1>
-                <p>Rascunho temporário para acompanhar até 5 partidas antes de consolidar os dados.</p>
-            </section>
-
-            <section class="table-card">
-                <div class="section-title">
-                    <h2>Rascunho de Partidas</h2>
-
-                    <div class="notes-actions">
-                        <button type="button" class="btn-small" id="clearNotesBtn">Limpar tudo</button>
-                    </div>
-                </div>
-
-                <div class="notes-table-wrap">
-                    <table class="notes-table" id="notesTable">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>1º Partida</th>
-                                <th>2º Partida</th>
-                                <th>3º Partida</th>
-                                <th>4º Partida</th>
-                                <th>5º Partida</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            <% const rows=[ 'Time' , 'Categoria' , 'Posição do Time' , '' , 'Placar' , 'Nota' , ''
-                                , 'Gols' , 'Gols Esperados' , 'Finalizações' , '% Finalizações Certas' , ''
-                                , 'Assistências' , 'Assistências Esperadas' , 'Passes' , '% Passes Certos'
-                                , 'Passes Importantes' , 'Pré-assistências' , '' , 'Dribles' , '% Dribles Certos'
-                                , 'Posse Ganha/Perdida' , '' , 'Divididas' , '% Divididas Vencidas' , 'Interceptações'
-                                , '% Disputas no Ataque' , '% Disputas na Defesa' ]; %>
-
-                                <% rows.forEach((row, rowIndex)=> { %>
-                                    <% if (row==='' ) { %>
-                                        <tr class="notes-separator">
-                                            <th></th>
-                                            <% for (let col=1; col <=5; col++) { %>
-                                                <td></td>
-                                                <% } %>
-                                        </tr>
-                                        <% } else { %>
-                                            <tr>
-                                                <th>
-                                                    <%= row %>
-                                                </th>
-
-                                                <% for (let col=1; col <=5; col++) { %>
-                                                    <td>
-                                                        <input type="text" data-row="<%= rowIndex %>"
-                                                            data-col="<%= col %>">
-                                                    </td>
-                                                    <% } %>
-                                            </tr>
-                                            <% } %>
-                                                <% }) %>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </main>
-
-        <script>
-            const STORAGE_KEY = 'playerCareerHub_matchNotes';
-
-            const inputs = document.querySelectorAll('#notesTable input');
-            const clearButton = document.getElementById('clearNotesBtn');
-
-            function loadNotes() {
-                const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-
-                inputs.forEach(input => {
-                    const key = `${input.dataset.row}_${input.dataset.col}`;
-                    input.value = saved[key] || '';
-                });
-            }
-
-            function saveNotes() {
-                const data = {};
-
-                inputs.forEach(input => {
-                    const key = `${input.dataset.row}_${input.dataset.col}`;
-                    data[key] = input.value;
-                });
-
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-            }
-
-            inputs.forEach(input => {
-                input.addEventListener('input', saveNotes);
-            });
-
-            clearButton.addEventListener('click', () => {
-                if (!confirm('Limpar todas as anotações?')) return;
-
-                localStorage.removeItem(STORAGE_KEY);
-
-                inputs.forEach(input => {
-                    input.value = '';
-                });
-            });
-
-            loadNotes();
-        </script>
-
-        <%- include('partials/footer') %>
+<%- include('partials/navbar') %>
+<link rel="stylesheet" href="/css/pages-v2.css">
+<main class="container pch-inner-page"><div class="pch-page-heading"><div><div class="pch-overline">PARTIDAS</div><h1>Anotações</h1><p>Registre até cinco partidas. As informações são salvas automaticamente no navegador.</p></div></div><section class="pch-panel"><div class="pch-panel-title"><div><h3>Rascunho de partidas</h3><p>As anotações não são incluídas no banco de dados.</p></div><div class="pch-note-actions"><span id="pchSaveStatus" class="pch-save-status" role="status">Salvamento automático</span><button type="button" id="pchCopyNotes" class="pch-secondary-button">Copiar resumo</button><button type="button" id="clearNotesBtn" class="pch-danger-button">Limpar tudo</button></div></div><div class="pch-table-scroll"><table class="pch-notes-table" id="notesTable"><thead><tr><th>Indicador</th><th>Partida 1</th><th>Partida 2</th><th>Partida 3</th><th>Partida 4</th><th>Partida 5</th></tr></thead><tbody><% const rows = ["Time", "Categoria", "Posição do Time", "", "Placar", "Nota", "", "Gols", "Gols Esperados", "Finalizações", "% Finalizações Certas", "", "Assistências", "Assistências Esperadas", "Passes", "% Passes Certos", "Passes Importantes", "Pré-assistências", "", "Dribles", "% Dribles Certos", "Posse Ganha/Perdida", "", "Divididas", "% Divididas Vencidas", "Interceptações", "% Disputas no Ataque", "% Disputas na Defesa"]; %><%rows.forEach((r,i)=>{if(!r){%><tr class="pch-notes-gap"><td colspan="6"></td></tr><%}else{%><tr><th><%= r %></th><%for(let c=1;c<=5;c++){%><td><input type="text" data-row="<%= i %>" data-col="<%= c %>" aria-label="<%= r %> - Partida <%= c %>" autocomplete="off"></td><%}%></tr><%}})%></tbody></table></div><p class="pch-notes-help">Os dados persistem neste navegador até serem apagados. Para guardar permanentemente, copie o resumo antes de limpar os campos.</p></section></main>
+<script>
+(() => {
+ const STORAGE_KEY='playerCareerHub_matchNotes';
+ const table=document.getElementById('notesTable');
+ const fields=Array.from(table.querySelectorAll('input'));
+ const status=document.getElementById('pchSaveStatus');
+ let saved={};
+ try { const value=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}'); if(value && typeof value==='object' && !Array.isArray(value)) saved=value; }catch(e){ status.textContent='Não foi possível carregar o rascunho'; }
+ fields.forEach(input=>{
+  const key=`${input.dataset.row}_${input.dataset.col}`;
+  input.value=saved[key] ?? '';
+  input.addEventListener('input',()=>{
+   saved[key]=input.value;
+   try {localStorage.setItem(STORAGE_KEY,JSON.stringify(saved));status.textContent='Salvo automaticamente';}catch(e){status.textContent='Erro ao salvar: armazenamento indisponível';}
+  });
+ });
+ document.getElementById('clearNotesBtn').addEventListener('click',()=>{
+  if(!confirm('Apagar todas as anotações das cinco partidas?')) return;
+  fields.forEach(input=>input.value=''); saved={};localStorage.removeItem(STORAGE_KEY);status.textContent='Anotações apagadas';
+ });
+ document.getElementById('pchCopyNotes').addEventListener('click',async()=>{
+  const lines=[];
+  for(let col=1;col<=5;col++){
+   const entries=[];
+   for(const input of fields.filter(f=>Number(f.dataset.col)===col)){
+    if(input.value.trim()) entries.push(`${input.closest('tr').querySelector('th').textContent.trim()}: ${input.value.trim()}`);
+   }
+   if(entries.length)lines.push(`PARTIDA ${col}\n${entries.join('\n')}`);
+  }
+  if(!lines.length){status.textContent='Preencha pelo menos um campo';return;}
+  const content=lines.join('\n\n');
+  try{await navigator.clipboard.writeText(content);status.textContent='Resumo copiado';}catch(e){status.textContent='Não foi possível copiar automaticamente';}
+ });
+})();
+</script>
+<%- include('partials/footer') %>

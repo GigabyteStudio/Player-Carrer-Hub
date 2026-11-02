@@ -1,112 +1,116 @@
 <%- include('partials/header', { title }) %>
-    <%- include('partials/navbar') %>
+<%- include('partials/navbar') %>
+<link rel="stylesheet" href="/css/manage-v2.css">
+<main class="container pch-manage">
+  <div class="pch-mhead">
+    <a class="pch-back" href="/gerenciar">← Gerenciar</a>
+    <div class="pch-eyebrow">CADASTROS</div>
+    <h1>Clubes e seleções</h1>
+    <p>Cadastre equipes manualmente, com país e escudo opcionais.</p>
+  </div>
+  <% if (error) { %><div class="pch-merror" role="alert"><%= error %></div><% } %>
 
-        <main class="container">
-            <section class="page-header">
-                <h1>Clubes e Seleções</h1>
-                <p>Cadastre clubes e seleções usados na carreira.</p>
-            </section>
+  <section class="pch-mpanel">
+    <div class="pch-mpanel-head"><h2>Nova equipe</h2><span>Escudo opcional • JPG, PNG ou WebP • até 5 MB</span></div>
+    <form class="pch-mform" method="post" action="/gerenciar/clubes/adicionar" enctype="multipart/form-data">
+      <label>Nome do clube ou seleção
+        <input name="name" placeholder="Ex.: FC Utrecht" maxlength="100" required>
+      </label>
+      <label>País
+        <select name="country_id" required>
+          <option value="">Selecione um país</option>
+          <% countries.forEach(country => { %>
+            <option value="<%= country.id %>"><%= country.name %></option>
+          <% }) %>
+        </select>
+      </label>
+      <label>Tipo
+        <select name="type" required>
+          <option value="Clube">Clube</option>
+          <option value="Seleção Nacional">Seleção Nacional</option>
+        </select>
+      </label>
+      <label>Escudo
+        <input type="file" name="logo" accept="image/jpeg,image/png,image/webp">
+      </label>
+      <button type="submit" class="pch-mbtn">Cadastrar equipe</button>
+    </form>
+  </section>
 
-            <section class="form-card">
-                <h2>Adicionar Clube/Seleção</h2>
+  <section class="pch-mpanel">
+    <div class="pch-mpanel-head"><h2>Equipes cadastradas</h2><span><%= clubs.length %> registros</span></div>
+    <% if (clubs.length === 0) { %>
+      <div class="pch-mempty">Nenhum clube ou seleção cadastrado.</div>
+    <% } else { %>
+      <div class="pch-mtoolbar"><input id="clubSearch" type="search" placeholder="Buscar equipe ou país" aria-label="Buscar equipe ou país"></div>
+      <div class="pch-mtable-wrap"><table class="pch-mtable">
+        <thead><tr><th>Equipe</th><th>Tipo</th><th>País</th><th>Ações</th></tr></thead>
+        <tbody>
+        <% clubs.forEach(club => { %>
+          <tr data-club-row data-search="<%= (club.name + ' ' + (club.country_name || '')).toLowerCase() %>">
+            <td><div class="pch-mentity">
+              <% if (club.logo) { %><img class="pch-crest" src="<%= club.logo %>" alt=""><% } %>
+              <strong><%= club.name %></strong>
+            </div></td>
+            <td><%= club.type === 'Seleção' ? 'Seleção Nacional' : club.type %></td>
+            <td><div class="pch-mentity">
+              <% if (club.country_flag) { %><img class="pch-flag" src="<%= club.country_flag %>" alt=""><% } %>
+              <%= club.country_name || '—' %>
+            </div></td>
+            <td><div class="pch-inline-actions">
+              <button type="button" class="pch-msecondary" data-edit-club="<%= club.id %>">Editar</button>
+              <form method="post" action="/gerenciar/clubes/excluir/<%= club.id %>" onsubmit="return confirm('Excluir esta equipe?')">
+                <button class="pch-linkdanger" type="submit">Excluir</button>
+              </form>
+            </div></td>
+          </tr>
+        <% }) %>
+        </tbody>
+      </table></div>
+    <% } %>
+  </section>
 
-                <form action="/gerenciar/clubes/adicionar" method="POST" enctype="multipart/form-data"
-                    class="form-grid">
-                    <div class="form-group">
-                        <label>Nome</label>
-                        <input type="text" name="name" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Tipo</label>
-                        <select name="type" required>
-                            <option value="Clube">Clube</option>
-                            <option value="Seleção">Seleção</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Liga</label>
-                        <select name="league_id">
-                            <option value="">Nenhuma</option>
-                            <% leagues.forEach(league=> { %>
-                                <option value="<%= league.id %>">
-                                    <%= league.name %>
-                                        <%= league.country_name ? `(${league.country_name})` : '' %>
-                                </option>
-                                <% }) %>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Escudo/Bandeira</label>
-                        <input type="file" name="logo" accept="image/*">
-                    </div>
-
-                    <button type="submit" class="btn-primary">Adicionar</button>
-                </form>
-            </section>
-
-            <section class="table-card">
-                <h2>Cadastrados</h2>
-
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Imagem</th>
-                            <th>Nome</th>
-                            <th>Tipo</th>
-                            <th>Liga</th>
-                            <th>País</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        <% clubs.forEach(club=> { %>
-                            <tr>
-                                <td>
-                                    <% if (club.logo) { %>
-                                        <img src="<%= club.logo %>" class="table-logo">
-                                        <% } else { %>
-                                            -
-                                            <% } %>
-                                </td>
-
-                                <td>
-                                    <%= club.name %>
-                                </td>
-
-                                <td>
-                                    <span class="badge">
-                                        <%= club.type || 'Clube' %>
-                                    </span>
-                                </td>
-
-                                <td>
-                                    <%= club.league_name || '-' %>
-                                </td>
-
-                                <td>
-                                    <% if (club.country_flag) { %>
-                                        <img src="<%= club.country_flag %>" class="table-flag">
-                                        <% } %>
-                                            <%= club.country_name || '-' %>
-                                </td>
-
-                                <td class="actions-cell">
-                                    <a class="btn-small" href="/gerenciar/clubes/editar/<%= club.id %>">Editar</a>
-
-                                    <form action="/gerenciar/clubes/excluir/<%= club.id %>" method="POST"
-                                        onsubmit="return confirm('Excluir este cadastro?')">
-                                        <button type="submit" class="btn-danger">Excluir</button>
-                                    </form>
-                                </td>
-                            </tr>
-                            <% }) %>
-                    </tbody>
-                </table>
-            </section>
-        </main>
-
-        <%- include('partials/footer') %>
+  <section class="pch-mpanel" id="clubEditPanel" hidden>
+    <div class="pch-mpanel-head"><h2>Editar equipe</h2><span>Deixe o campo de imagem vazio para manter o escudo atual.</span></div>
+    <form class="pch-mform" id="clubEditForm" method="post" enctype="multipart/form-data">
+      <label>Nome<input id="clubEditName" name="name" maxlength="100" required></label>
+      <label>País<select id="clubEditCountry" name="country_id" required>
+        <% countries.forEach(country => { %><option value="<%= country.id %>"><%= country.name %></option><% }) %>
+      </select></label>
+      <label>Tipo<select id="clubEditType" name="type" required>
+        <option value="Clube">Clube</option><option value="Seleção Nacional">Seleção Nacional</option>
+      </select></label>
+      <label>Novo escudo (opcional)<input name="logo" type="file" accept="image/jpeg,image/png,image/webp"></label>
+      <button type="submit" class="pch-mbtn">Salvar alterações</button>
+      <button type="button" class="pch-msecondary" id="clubEditCancel">Cancelar</button>
+    </form>
+  </section>
+</main>
+<script type="application/json" id="clubsJson"><%- JSON.stringify(clubs.map(club => ({ id: club.id, name: club.name, type: club.type, country_id: club.country_id }))).replace(/</g, '\\u003c') %></script>
+<script>
+(() => {
+  const clubs = JSON.parse(document.getElementById('clubsJson').textContent);
+  const panel = document.getElementById('clubEditPanel');
+  document.querySelectorAll('[data-edit-club]').forEach(button => {
+    button.addEventListener('click', () => {
+      const club = clubs.find(item => String(item.id) === button.dataset.editClub);
+      if (!club) return;
+      document.getElementById('clubEditForm').action = '/gerenciar/clubes/editar/' + club.id;
+      document.getElementById('clubEditName').value = club.name;
+      document.getElementById('clubEditCountry').value = club.country_id;
+      document.getElementById('clubEditType').value = club.type === 'Seleção' ? 'Seleção Nacional' : club.type;
+      panel.hidden = false;
+      panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  });
+  document.getElementById('clubEditCancel').addEventListener('click', () => { panel.hidden = true; });
+  const search = document.getElementById('clubSearch');
+  if (search) search.addEventListener('input', () => {
+    const term = search.value.toLocaleLowerCase('pt-BR').trim();
+    document.querySelectorAll('[data-club-row]').forEach(row => {
+      row.hidden = !row.dataset.search.toLocaleLowerCase('pt-BR').includes(term);
+    });
+  });
+})();
+</script>
+<%- include('partials/footer') %>

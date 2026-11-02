@@ -1,0 +1,62 @@
+/* Conquistas agrupadas por contexto: temporada, clube, competição e observação. */
+.pch-grouped-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap
+}
+
+.pch-grouped-count {
+    background: #293821;
+    border: 1px solid #425c32;
+    border-radius: 6px;
+    color: #cbf078;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 9px;
+    white-space: nowrap
+}
+
+.pch-grouped-entry .pch-trophy-meta {
+    margin-top: 9px
+}
+
+.pch-grouped-edit-items {
+    display: none;
+    margin-top: 14px;
+    padding-top: 6px;
+    border-top: 1px solid #34402e
+}
+
+.pch-trophy-grid.pch-editing .pch-grouped-edit-items {
+    display: block
+}
+
+.pch-grouped-edit-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 7px 0
+}
+
+.pch-grouped-edit-item+.pch-grouped-edit-item {
+    border-top: 1px solid #293428
+}
+
+.pch-grouped-edit-item>span {
+    color: #a6b49d;
+    font-size: 12px
+}
+
+.pch-grouped-edit-item .pch-inline-actions {
+    margin: 0
+}
+
+@media(max-width:580px) {
+    .pch-grouped-edit-item {
+        align-items: flex-start
+    }
+}

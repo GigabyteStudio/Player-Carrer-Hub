@@ -1,0 +1,343 @@
+.pch-record-page {
+    padding-bottom: 64px
+}
+
+.pch-record-back {
+    color: #c4d6b6;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600
+}
+
+.pch-record-back:hover {
+    color: #cbf078
+}
+
+.pch-record-panel {
+    background: #1b2319;
+    border: 1px solid #34402e;
+    border-radius: 16px;
+    padding: 28px;
+    margin-top: 22px
+}
+
+.pch-record-panel-head {
+    margin-bottom: 26px
+}
+
+.pch-record-panel-head h2 {
+    margin: 0 0 6px;
+    color: #f4f6ef;
+    font: 700 26px 'Barlow Condensed', sans-serif
+}
+
+.pch-record-panel-head p {
+    margin: 0;
+    color: #96a48e;
+    font-size: 13px
+}
+
+.pch-record-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px
+}
+
+.pch-record-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: #bfcbb5;
+    font-size: 13px;
+    font-weight: 600
+}
+
+.pch-record-field input,
+.pch-record-field select {
+    width: 100%;
+    min-height: 45px;
+    padding: 10px 13px;
+    background: #10170f;
+    border: 1px solid #354332;
+    border-radius: 9px;
+    color: #eff4e7;
+    font: 500 14px 'DM Sans', sans-serif;
+    min-width: 0
+}
+
+.pch-record-field input:focus,
+.pch-record-field select:focus {
+    border-color: #cbf078;
+    outline: 2px solid #cbf07830
+}
+
+.pch-record-field input[type=file] {
+    padding: 10px
+}
+
+.pch-record-field select option {
+    background: #182017
+}
+
+.pch-record-actions {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    margin-top: 25px
+}
+
+.pch-record-check {
+    display: flex;
+    gap: 9px;
+    align-items: center;
+    color: #d5e1cf;
+    font-size: 13px
+}
+
+.pch-record-check input {
+    accent-color: #cbf078;
+    width: 17px;
+    height: 17px
+}
+
+.pch-record-wide {
+    grid-column: 1/-1
+}
+
+.pch-record-tip {
+    background: #263520;
+    border: 1px solid #3d5632;
+    padding: 13px 16px;
+    border-radius: 9px;
+    color: #b9c9ac;
+    font-size: 13px
+}
+
+.pch-record-page .pch-primary-action {
+    border: 0;
+    cursor: pointer
+}
+
+.pch-record-page .pch-primary-action:disabled {
+    opacity: .4;
+    cursor: not-allowed
+}
+
+.pch-page-heading .pch-primary-action {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    white-space: nowrap
+}
+
+.pch-page-heading {
+    gap: 14px;
+    flex-wrap: wrap
+}
+
+@media(max-width:900px) {
+    .pch-record-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+    }
+}
+
+@media(max-width:580px) {
+    .pch-record-grid {
+        grid-template-columns: 1fr
+    }
+
+    .pch-record-panel {
+        padding: 18px
+    }
+}
+
+/* V2 — campos do registro: espaçamento e controles independentes */
+.pch-record-page .pch-record-grid {
+    column-gap: 24px;
+    row-gap: 25px;
+    align-items: start;
+}
+
+.pch-record-page .pch-record-field {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+    width: 100%;
+    margin: 0;
+}
+
+.pch-record-page .pch-record-field input,
+.pch-record-page .pch-record-field select {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    height: 48px;
+    min-height: 48px;
+    border-radius: 9px;
+    padding: 10px 14px;
+}
+
+.pch-record-page .pch-record-field input[type=file] {
+    height: auto;
+    min-height: 48px;
+}
+
+.pch-record-page .pch-record-check {
+    align-self: end;
+    min-height: 48px;
+    padding: 7px 0;
+}
+
+.pch-record-page .pch-record-actions {
+    margin-top: 32px;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.pch-record-page .pch-record-panel-head {
+    margin-bottom: 30px;
+}
+
+.pch-record-page .pch-record-wide {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.pch-record-page .pch-money-wrapper {
+    position: relative;
+    min-width: 0;
+}
+
+.pch-record-page .pch-money-wrapper input {
+    padding-left: 38px;
+    font-variant-numeric: tabular-nums;
+}
+
+.pch-record-page .pch-money-prefix {
+    position: absolute;
+    top: 50%;
+    left: 14px;
+    transform: translateY(-50%);
+    color: #cbf078;
+    font-weight: 700;
+    pointer-events: none;
+}
+
+.pch-inline-actions {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.pch-inline-actions a,
+.pch-inline-actions button {
+    background: #263221;
+    border: 1px solid #46583a;
+    color: #d9e7ce;
+    padding: 7px 11px;
+    border-radius: 7px;
+    font: 600 12px 'DM Sans', sans-serif;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.pch-inline-actions a:hover,
+.pch-inline-actions button:hover {
+    border-color: #cbf078;
+    color: #cbf078;
+}
+
+.pch-inline-actions .pch-danger {
+    border-color: #62403a;
+    color: #ffb0a4;
+}
+
+.pch-record-actions form,
+.pch-inline-actions form {
+    margin: 0;
+}
+
+.pch-boolean-check {
+    color: #cbf078;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+@media(max-width:700px) {
+    .pch-record-page .pch-record-grid {
+        column-gap: 16px;
+        row-gap: 20px
+    }
+}
+
+/* Ações compactas no histórico de transferências */
+.pch-transfer-action-col {
+    text-align: right;
+    white-space: nowrap;
+    width: 90px
+}
+
+.pch-transfer-delete {
+    margin: 0;
+    display: inline-flex
+}
+
+.pch-transfer-delete-btn {
+    border: 1px solid #68413b;
+    border-radius: 7px;
+    padding: 7px 12px;
+    color: #ffb7aa;
+    background: transparent;
+    font: 600 12px 'DM Sans', sans-serif;
+    cursor: pointer
+}
+
+.pch-transfer-delete-btn:hover {
+    background: #38211e;
+    border-color: #e18d80
+}
+
+/* Modo de edição opt-in: as conquistas ficam limpas no modo de leitura */
+.pch-trophy-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap
+}
+
+.pch-trophy-edit-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #c8d6bf;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap
+}
+
+.pch-trophy-edit-toggle input {
+    accent-color: #cbf078;
+    width: 17px;
+    height: 17px;
+    cursor: pointer
+}
+
+.pch-trophy-grid:not(.pch-editing) .pch-inline-actions {
+    display: none
+}
+
+.pch-trophy-grid.pch-editing .pch-inline-actions {
+    display: flex
+}
+
+@media(max-width:650px) {
+    .pch-trophy-header-actions {
+        gap: 12px
+    }
+}

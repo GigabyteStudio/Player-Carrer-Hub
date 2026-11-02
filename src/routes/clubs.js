@@ -1,157 +1,71 @@
 const express = require('express');
-const multer = require('multer');
-const path = require('path');
 const db = require('../database/db');
-
+const images = require('../utils/namedImages');
 const router = express.Router();
+const upload = images.stagingUpload('clubs', 'logo');
 
-function slugify(text) {
-  return text
-    .trim()
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '');
+function listClubs() {
+  return db.prepare(`SELECT cl.*, co.name AS country_name, co.flag AS country_flag
+    FROM clubs cl LEFT JOIN countries co ON co.id = cl.country_id
+    ORDER BY cl.name COLLATE NOCASE, cl.id`).all();
 }
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'public/uploads/clubs');
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    cb(null, `${slugify(req.body.name)}${ext}`);
-  }
-});
-
-const upload = multer({ storage });
-
-router.get('/', (req, res) => {
-  const clubs = db.prepare(`
-    SELECT 
-      clubs.*,
-      countries.name AS country_name,
-      countries.flag AS country_flag,
-      competitions.name AS league_name
-    FROM clubs
-    LEFT JOIN countries ON countries.id = clubs.country_id
-    LEFT JOIN competitions ON competitions.id = clubs.league_id
-    ORDER BY clubs.type ASC, clubs.name ASC
-  `).all();
-
-  const countries = db.prepare(`
-    SELECT * FROM countries
-    ORDER BY name ASC
-  `).all();
-
-  const leagues = db.prepare(`
-    SELECT 
-      competitions.*,
-      countries.name AS country_name
-    FROM competitions
-    LEFT JOIN countries ON countries.id = competitions.country_id
-    WHERE competitions.category = 'Liga'
-    ORDER BY competitions.name ASC
-  `).all();
-
-  res.render('manage-clubs', {
-    title: 'Clubes',
-    clubs,
-    countries,
-    leagues
+function render(res, status = 200, error = null) {
+  return res.status(status).render('manage-clubs', {
+    title: 'Clubes', error, clubs: listClubs(),
+    countries: db.prepare('SELECT id, name, flag FROM countries ORDER BY name COLLATE NOCASE').all()
   });
-});
-
-router.post('/adicionar', upload.single('logo'), (req, res) => {
-  const { name, type, league_id } = req.body;
-
-  let finalCountryId = null;
-  let finalLeagueId = league_id || null;
-
-  if (type === 'Clube' && league_id) {
-    const league = db.prepare(`
-      SELECT country_id FROM competitions WHERE id = ?
-    `).get(league_id);
-
-    finalCountryId = league ? league.country_id : finalCountryId;
-  }
-
-  if (type === 'Seleção') {
-    finalLeagueId = null;
-  }
-
-  const logo = req.file ? `/uploads/clubs/${req.file.filename}` : null;
-
-  db.prepare(`
-    INSERT INTO clubs (name, type, country_id, league_id, logo)
-    VALUES (?, ?, ?, ?, ?)
-  `).run(name, type || 'Clube', finalCountryId, finalLeagueId, logo);
-
-  res.redirect('/gerenciar/clubes');
-});
-
-router.get('/editar/:id', (req, res) => {
-  const club = db.prepare(`
-    SELECT * FROM clubs WHERE id = ?
-  `).get(req.params.id);
-
-  const countries = db.prepare(`
-    SELECT * FROM countries
-    ORDER BY name ASC
-  `).all();
-
-  const leagues = db.prepare(`
-    SELECT 
-      competitions.*,
-      countries.name AS country_name
-    FROM competitions
-    LEFT JOIN countries ON countries.id = competitions.country_id
-    WHERE competitions.category = 'Liga'
-    ORDER BY competitions.name ASC
-  `).all();
-
-  res.render('edit-club', {
-    title: 'Editar Clube/Seleção',
-    club,
-    countries,
-    leagues
+}
+router.get('/', (_req, res) => render(res));
+function save(req, res, editing = false) {
+  upload(req, res, error => {
+    if (error) return render(res, 400, 'Escudo inválido. Use JPG, PNG ou WebP com até 5 MB.');
+    const name = String(req.body.name || '').trim();
+    const type = req.body.type;
+    const countryId = Number(req.body.country_id);
+    const country = Number.isSafeInteger(countryId) ? db.prepare('SELECT id FROM countries WHERE id = ?').get(countryId) : null;
+    const old = editing ? db.prepare('SELECT * FROM clubs WHERE id = ?').get(req.params.id) : null;
+    if (!name || name.length > 100 || !['Clube', 'Seleção Nacional'].includes(type) || !country || (editing && !old)) {
+      images.discard(req.file);
+      return render(res, 400, 'Informe um nome, um tipo e um país válidos.');
+    }
+    const duplicate = db.prepare(`SELECT id FROM clubs WHERE LOWER(name) = LOWER(?) AND country_id = ? AND type = ? AND id != ?`)
+      .get(name, countryId, type, old?.id || 0);
+    if (duplicate) {
+      images.discard(req.file);
+      return render(res, 400, 'Já existe uma equipe com esse nome, país e tipo.');
+    }
+    try {
+      const logo = images.resolvedUrl('clubs', name, req.file, old?.logo, old?.name);
+      // O arquivo é finalizado antes da atualização; se houver falha no SQLite,
+      // a imagem continua disponível para reutilização.
+      images.finalize('clubs', name, req.file);
+      if (editing) {
+        db.prepare(`UPDATE clubs SET name=?, type=?, country_id=?, league_id=NULL, logo=?, updated_at=CURRENT_TIMESTAMP WHERE id=?`)
+          .run(name, type, countryId, logo, old.id);
+      } else {
+        db.prepare(`INSERT INTO clubs(name,type,country_id,league_id,logo) VALUES(?,?,?,NULL,?)`)
+          .run(name, type, countryId, logo);
+      }
+      res.redirect('/gerenciar/clubes');
+    } catch (e) {
+      console.error(e);
+      images.discard(req.file);
+      return render(res, 500, 'Não foi possível salvar a equipe.');
+    }
   });
-});
-
-router.post('/editar/:id', upload.single('logo'), (req, res) => {
-  const { id } = req.params;
-  const { name, type, league_id, current_logo } = req.body;
-
-  let finalCountryId = null;
-  let finalLeagueId = league_id || null;
-
-  if (type === 'Clube' && league_id) {
-    const league = db.prepare(`
-      SELECT country_id FROM competitions WHERE id = ?
-    `).get(league_id);
-
-    finalCountryId = league ? league.country_id : finalCountryId;
-  }
-
-  if (type === 'Seleção') {
-    finalLeagueId = null;
-  }
-
-  const logo = req.file ? `/uploads/clubs/${req.file.filename}` : current_logo;
-
-  db.prepare(`
-    UPDATE clubs
-    SET name = ?, type = ?, country_id = ?, league_id = ?, logo = ?, updated_at = CURRENT_TIMESTAMP
-    WHERE id = ?
-  `).run(name, type || 'Clube', finalCountryId, finalLeagueId, logo, id);
-
-  res.redirect('/gerenciar/clubes');
-});
-
+}
+router.post('/adicionar', (req, res) => save(req, res));
+router.post('/editar/:id', (req, res) => save(req, res, true));
 router.post('/excluir/:id', (req, res) => {
-  db.prepare('DELETE FROM clubs WHERE id = ?').run(req.params.id);
-  res.redirect('/gerenciar/clubes');
+  const club = db.prepare('SELECT id FROM clubs WHERE id=?').get(req.params.id);
+  if (!club) return render(res, 404, 'Equipe não encontrada.');
+  try {
+    db.prepare('DELETE FROM clubs WHERE id=?').run(club.id);
+    // Não apagar escudo: poderá ser reutilizado em outro cadastro ou após reset.
+    res.redirect('/gerenciar/clubes');
+  } catch (e) {
+    console.error(e);
+    render(res, 400, 'Não foi possível excluir: equipe vinculada a outros registros.');
+  }
 });
-
 module.exports = router;

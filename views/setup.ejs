@@ -1,0 +1,64 @@
+<%- include('partials/header', { title }) %>
+<%- include('partials/navbar') %>
+<link rel="stylesheet" href="/css/setup-v2.css">
+<main class="container pch-setup">
+  <header class="pch-page-heading"><div><div class="pch-overline">PERFIL DO JOGADOR</div><h1><%= player ? 'Editar jogador' : 'Comece sua carreira' %></h1><p>Preencha os dados do jogador. Você poderá alterá-los posteriormente em Editar perfil.</p></div></header>
+  <% if (error) { %><div class="pch-setup-alert" role="alert"><%= error %></div><% } %>
+  <form action="/cadastro" method="POST" enctype="multipart/form-data" id="setupForm" class="pch-setup-layout">
+    <div class="pch-setup-main">
+      <section class="pch-setup-panel"><div class="pch-setup-section"><span>01</span><div><h2>Dados pessoais</h2><p>Informações básicas da carreira.</p></div></div>
+        <div class="pch-setup-grid">
+          <label class="pch-field pch-full">Nome do jogador <input type="text" name="name" maxlength="90" required value="<%= values.name || '' %>" placeholder="Nome completo"></label>
+          <label class="pch-field">Idade <input type="number" name="age" min="15" max="65" required value="<%= values.age ?? '' %>" placeholder="18"></label>
+          <label class="pch-field">Nacionalidade <select name="nationality_code" id="nationality" required><option value="">Selecione um país</option><% countries.forEach(country => { %><option value="<%= country.code %>"><%= country.name %></option><% }) %></select></label>
+          <label class="pch-field">Altura (cm) <input type="number" name="height" min="120" max="230" step="1" required value="<%= values.height ?? '' %>" placeholder="175"></label>
+          <label class="pch-field">Peso (kg) <input type="number" name="weight" min="35" max="200" step="1" required value="<%= values.weight ?? '' %>" placeholder="75"></label>
+        </div>
+      </section>
+      <section class="pch-setup-panel"><div class="pch-setup-section"><span>02</span><div><h2>Características em campo</h2><p>Selecione até cinco posições. Goleiro não pode ser combinado com outras posições.</p></div></div>
+        <div class="pch-field"><span class="pch-field-label">Posições <small id="positionCounter">0 / 5</small></span><div class="pch-position-picker" id="positionPicker"><% positions.forEach(pos => { %><label class="pch-position-option"><input type="checkbox" name="positions" value="<%= pos %>"><span><%= pos %></span></label><% }) %></div><p class="pch-hint" id="goalkeeperHint" hidden>Para goleiro, a evolução utilizará atributos específicos: mergulho, manejo, chute, reflexos, velocidade e posicionamento.</p></div>
+        <div class="pch-setup-grid" style="margin-top:22px">
+          <label class="pch-field">Pé dominante <select name="preferred_foot" required><option value="">Selecione</option><option value="Direito" <%= values.preferred_foot === 'Direito'?'selected':'' %>>Direito</option><option value="Esquerdo" <%= values.preferred_foot === 'Esquerdo'?'selected':'' %>>Esquerdo</option></select></label>
+          <label class="pch-field">Número da camisa <input type="number" name="shirt_number" min="1" max="99" value="<%= values.shirt_number ?? '' %>" placeholder="10"></label>
+          <label class="pch-field">Fintas (estrelas) <select name="skill_moves"><% for(let n=0;n<=5;n++){ %><option value="<%= n %>" <%= Number(values.skill_moves ?? 0) === n ? 'selected' : '' %>><%= n %> <%= n===1?'estrela':'estrelas' %></option><% } %></select></label>
+          <label class="pch-field">Perna Ruim (estrelas) <select name="weak_foot"><% for(let n=0;n<=5;n++){ %><option value="<%= n %>" <%= Number(values.weak_foot ?? 0) === n ? 'selected' : '' %>><%= n %> <%= n===1?'estrela':'estrelas' %></option><% } %></select></label>
+          <label class="pch-field pch-full">Patrocinador <input type="text" name="sponsor" maxlength="100" value="<%= values.sponsor || '' %>" placeholder="Opcional"></label>
+        </div>
+      </section>
+      <div class="pch-setup-actions"><button type="submit" class="pch-primary-action"><%= player ? 'Salvar alterações' : 'Criar jogador e começar' %></button></div>
+    </div>
+    <aside class="pch-setup-panel pch-photo-card"><div class="pch-setup-section"><span>03</span><div><h2>Foto do jogador</h2><p>Recomendado: retrato vertical, 900 × 1200 px ou maior.</p></div></div>
+      <div class="pch-photo-preview" id="photoPreview"><% if (player?.photo) { %><img id="photoImage" src="<%= player.photo %>" alt="Prévia da foto" style="object-position:<%= player.photo_position_x ?? 50 %>% <%= player.photo_position_y ?? 50 %>%;transform:scale(<%= player.photo_zoom ?? 1 %>)"><% } else { %><img id="photoImage" alt="Prévia da foto" hidden><div class="pch-photo-placeholder" id="photoPlaceholder">PRÉVIA DA FOTO</div><% } %></div>
+      <label class="pch-photo-upload">Escolher imagem <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" id="photoInput"></label>
+      <p class="pch-hint">JPG, PNG ou WebP, até 5 MB. O enquadramento é guardado sem alterar a imagem original.</p>
+      <label class="pch-field">Posição horizontal <input type="range" min="0" max="100" name="photo_position_x" id="photoX" value="<%= values.photo_position_x ?? 50 %>"></label>
+      <label class="pch-field">Posição vertical <input type="range" min="0" max="100" name="photo_position_y" id="photoY" value="<%= values.photo_position_y ?? 50 %>"></label>
+      <label class="pch-field">Zoom <input type="range" min="100" max="200" id="photoZoomSlider" value="<%= Math.round(Number(values.photo_zoom ?? 1)*100) %>"><input type="hidden" name="photo_zoom" id="photoZoom" value="<%= values.photo_zoom ?? 1 %>"></label>
+    </aside>
+  </form>
+</main>
+<script>
+(() => {
+ const selectedPositions = <%- JSON.stringify(String(values.positions || '').split(',').map(p=>p.trim()).filter(Boolean)) %>;
+ const checkboxes = [...document.querySelectorAll('input[name="positions"]')];
+ checkboxes.forEach(c => { c.checked = selectedPositions.includes(c.value); c.addEventListener('change', () => {
+   if (c.checked && c.value === 'GOL') checkboxes.filter(x=>x!==c).forEach(x=>x.checked=false);
+   if (c.checked && c.value !== 'GOL') { const keeper = checkboxes.find(x=>x.value==='GOL');keeper.checked=false; }
+   if (checkboxes.filter(x=>x.checked).length>5) {c.checked=false;alert('Selecione no máximo cinco posições.');}
+   update();
+ });});
+ function update(){const count=checkboxes.filter(x=>x.checked).length;document.getElementById('positionCounter').textContent=`${count} / 5`;document.getElementById('goalkeeperHint').hidden=!checkboxes.some(x=>x.value==='GOL'&&x.checked);}
+ update();
+ const nationality=document.getElementById('nationality');
+ // A nacionalidade existente é selecionada pelo código passado pela view.
+ nationality.value = <%- JSON.stringify(typeof nationalityCode === 'undefined' ? '' : nationalityCode) %>;
+ const file=document.getElementById('photoInput'), img=document.getElementById('photoImage'), placeholder=document.getElementById('photoPlaceholder');
+ const x=document.getElementById('photoX'),y=document.getElementById('photoY'),zoom=document.getElementById('photoZoomSlider'),zoomInput=document.getElementById('photoZoom');
+ function updatePhoto(){img.style.objectPosition=x.value+'% '+y.value+'%';img.style.transform=`scale(${Number(zoom.value)/100})`;zoomInput.value=Number(zoom.value)/100;}
+ [x,y,zoom].forEach(el=>el.addEventListener('input',updatePhoto));
+ file.addEventListener('change',()=>{const f=file.files[0];if(!f)return;if(f.size>5*1024*1024){alert('Imagem maior que 5 MB.');file.value='';return;}const url=URL.createObjectURL(f);img.onload=()=>URL.revokeObjectURL(url);img.src=url;img.hidden=false;if(placeholder)placeholder.hidden=true;updatePhoto();});
+ document.getElementById('setupForm').addEventListener('submit',e=>{if(!checkboxes.some(c=>c.checked)){e.preventDefault();alert('Escolha pelo menos uma posição.');}});
+ updatePhoto();
+})();
+</script>
+<%- include('partials/footer') %>
